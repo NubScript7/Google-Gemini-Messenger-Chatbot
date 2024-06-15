@@ -1,0 +1,15 @@
+{
+  "name": "ggmc",
+  "version": "1.0.0",
+  "description": "A Chatbot for Facebook Messenger using Facebook Messenger Chat API and Google Gemini AI API",
+  "main": "index.js",
+  "scripts": {
+    "start": ""
+  },
+  "dependencies": {
+    ""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
