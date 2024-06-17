@@ -4,7 +4,9 @@
   "description": "A Chatbot for Facebook Messenger using Facebook Messenger Chat API and Google Gemini AI API",
   "main": "src/main.js",
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "dev": "nodemon src/main.js",
+    "build": "webpack"
   },
   "dependencies": {
     "express": "^4.19.2",
