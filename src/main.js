@@ -136,6 +136,6 @@ function send(id, msg, returnPromise=false) {
 	}
 }
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("app is healty and running!")
 })
