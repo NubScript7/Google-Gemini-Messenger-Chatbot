@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const ai = require("./gemini.js");
+const ai = require("./gemini");
+const IncompleteEnvironmentVariableError = require("./IncompleteEnvironmentVariableError")
 const app = express();
 
 /*
@@ -18,6 +19,15 @@ const socketSettings = {
 
 const io = socketIO(server);
 */
+
+const requiredEnvironmentVariables = [
+  "GEMINI_API_KEY",
+  "FB_PAGE_VERIFY_TOKEN",
+  "FB_PAGE_ACCESS_TOKEN"
+]
+
+if(requiredEnvironmentVariables.some(e => process.env[e] === undefined))
+  throw new IncompleteEnvironmentVariableError("One of required environment variable failed to load or not initialized")
 
 const GOOGLE_GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const gemini = ai.init(GOOGLE_GEMINI_API_KEY);
