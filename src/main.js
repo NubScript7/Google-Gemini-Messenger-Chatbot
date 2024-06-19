@@ -10,6 +10,7 @@ const MessageCountExceededError = require("./MessageCountExceededError")
 const app = express();
 
 let messagesCount;
+let throwError;
 /*
 const socketIO = require("socket.io");
 const server = require("http").Server(app);
@@ -162,3 +163,4 @@ function send(id, msg, returnPromise=false) {
 app.listen(process.env.PORT || 3000, () => {
   console.log("app is healty and running!")
 })
+
