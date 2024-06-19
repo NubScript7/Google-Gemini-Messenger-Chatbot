@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require("cors");
 const ai = require("./gemini");
 const IncompleteEnvironmentVariableError = require("./IncompleteEnvironmentVariableError")
+const MessageCountExceededError = require("./MessageCountExceededError")
 const app = express();
 
 /*
@@ -120,12 +121,14 @@ function chunkify(str) {
   return chunk;
 }
 
+let messagesCount;
+
 function send(id, msg, returnPromise=false) {
 	
 	if (messagesCount >= 50)return throwError = true;
 	
 	if(throwError){
-		throw new Error("Message limit exceeded.")
+		throw new MessageCountExceededError("Message limit exceeded.")
 	}
 	messagesCount += 1;
 
