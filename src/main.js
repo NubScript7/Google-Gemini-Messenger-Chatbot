@@ -69,16 +69,16 @@ app.post("/webhook", (req, res) => {
 			const msg = user?.message?.text || null;
 			if (!msg || "string" !== typeof msg || !senderId || isNaN(senderId))return res.sendStatus(400)
 			
+			res.send("EVENT_RECEIVED");
+			console.log("sent status code 200 OK");
 			send(senderId, "Gemini is thinking...");
-			gemini.ask(msg).then(e => {
+			
+			ai.ask(msg).then(e => {
 				chunkify(e).forEach(i => {
-					send(senderId, i)
+					send(senderId, i).catch(e=>send(senderId, "Failed to send a chuck 😢").catch(e=>{}))
 				})
 			})
 			.catch(e => send(senderId, "Something went wrong, try again later."))
-			
-			res.send("EVENT_RECEIVED");
-			console.log("sent status code 200 OK")
 		}
 	} else {
 		console.log("sent status code 401 Unauthorized")
@@ -126,7 +126,7 @@ function chunkify(str) {
 
 function send(id, msg, returnPromise=false) {
 	
-	if (messagesCount >= 50)return throwError = true;
+	if (messagesCount >= 15)return throwError = true;
 	
 	if(throwError){
 		throw new MessageCountExceededError("Message limit exceeded.")

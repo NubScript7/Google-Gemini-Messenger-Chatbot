@@ -38,7 +38,7 @@ class Gemini {
   }
   
   ask(message=null) {
-    if(!message || message == "" || !this.IS_INITIALIZED)
+    if(!message || message == "" || !this.#IS_INITIALIZED)
       throw new Error("Message was empty or not yet initialized.")
     return new Promise((res,rej) => {
       this.#CHAT_SESSION.sendMessage(message).then(e => res(e.response.text()) )
@@ -47,7 +47,7 @@ class Gemini {
   }
   
   askStream(message) {
-    if(!message || message == "" || !this.IS_INITIALIZED)
+    if(!message || message == "" || !this.#IS_INITIALIZED)
       throw new Error("Message was empty or not yet initialized.")
     return new Promise((res, rej) => {
       this.#CHAT_SESSION.sendMessageStream(message).then(e => res(e.stream) )
