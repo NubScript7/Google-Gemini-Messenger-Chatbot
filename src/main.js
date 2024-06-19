@@ -1,3 +1,7 @@
+if(process.argv.includes("--dotenv")){
+  const path = require("path");
+  require("dotenv").config({path: path.resolve(__dirname,"../.env")})
+}
 const express = require("express");
 const cors = require("cors");
 const ai = require("./gemini");
@@ -21,10 +25,17 @@ const io = socketIO(server);
 */
 
 const requiredEnvironmentVariables = [
-  "GEMINI_API_KEY",
+  "GOOGLE_GEMINI_API_KEY",
   "FB_PAGE_VERIFY_TOKEN",
   "FB_PAGE_ACCESS_TOKEN"
 ]
+
+/*
+console.log(process.env.GEMINI_API_KEY)
+requiredEnvironmentVariables.forEach((e, i) => {
+  console.log(requiredEnvironmentVariables[i]," : ",process.env[e])
+})
+*/
 
 if(requiredEnvironmentVariables.some(e => process.env[e] === undefined))
   throw new IncompleteEnvironmentVariableError("One of required environment variable failed to load or not initialized")
