@@ -9,6 +9,7 @@ const IncompleteEnvironmentVariableError = require("./IncompleteEnvironmentVaria
 const MessageCountExceededError = require("./MessageCountExceededError")
 const app = express();
 
+let messagesCount;
 /*
 const socketIO = require("socket.io");
 const server = require("http").Server(app);
@@ -120,8 +121,6 @@ function chunkify(str) {
 
   return chunk;
 }
-
-let messagesCount;
 
 function send(id, msg, returnPromise=false) {
 	
