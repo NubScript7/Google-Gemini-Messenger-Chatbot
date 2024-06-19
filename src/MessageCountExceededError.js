@@ -1,5 +1,4 @@
-class MessageCountExceededError.js extends Error
-{
+class MessageCountExceededError extends Error {
     constructor(message)
     {
         super(message);

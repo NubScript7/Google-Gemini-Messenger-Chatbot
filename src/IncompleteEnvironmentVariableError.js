@@ -1,5 +1,4 @@
-class IncompleteEnvironmentVariableError extends Error
-{
+class IncompleteEnvironmentVariableError extends Error {
     constructor(message)
     {
         super(message);
