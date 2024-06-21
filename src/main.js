@@ -150,12 +150,13 @@ function chunkify(str) {
 
   for (let i = 0; i < str.length; i += portionSize) {
     chunk.push(str.slice(i, i + portionSize));
+    console.log(chunk[i])
   }
 
   return chunk;
 }
 
-function send(id, msg, returnPromise=false) {
+function send(id, msg, returnPromise=false,customUrl=null) {
 	
 	if (messagesCount >= 15)return throwError = true;
 	
@@ -164,9 +165,9 @@ function send(id, msg, returnPromise=false) {
 	}
 	messagesCount += 1;
 
-	const req = axios.post(
-	 "https://graph.facebook.com/v2.6/me/messages",
-		{
+	const url = typeof customUrl === "string" ? customUrl : "https://graph.facebook.com/v2.6/me/messages";
+
+	const req = axios.post(url, {
 			recipient: {
 				id: id
 			},
@@ -192,7 +193,13 @@ function send(id, msg, returnPromise=false) {
 	}
 }
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("app is healty and running!")
-})
-
+module.exports = {
+  app,
+  ai,
+  send
+}
+module.exports.default = {
+  app,
+  ai,
+  send
+}

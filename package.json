@@ -5,8 +5,8 @@
   "main": "src/main.js",
   "scripts": {
     "test": "jest",
-    "start": "node src/main.js",
-    "dev": "nodemon src/main.js --dotenv"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js --dotenv"
   },
   "repository": {
     "type": "git",
