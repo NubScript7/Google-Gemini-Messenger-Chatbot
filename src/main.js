@@ -52,6 +52,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.disable("x-powered-by");
 
+const VERSION = "1.0.0"
+
+const net = {
+	url: "self",
+	output: "https://graph.facebook.com/v2.6/me/messages"
+}
+
 app.post("/webhook", (req, res) => {
 	if (req.body.object === "page") {
 		const ea = req.body.entry || null;
@@ -70,17 +77,42 @@ app.post("/webhook", (req, res) => {
 			const msg = user?.message?.text || null;
 			if (!msg || "string" !== typeof msg || !senderId || isNaN(senderId))return res.sendStatus(400)
 			
+			const msgArgs = e.message.split("!")[1].split(" ");
+			
 			res.send("EVENT_RECEIVED");
 			console.log("sent status code 200 OK");
 			send(senderId, "Gemini is thinking...");
 			
-			ai.ask(msg).then(e => {
-				sendMsgsConsecutively(chunkify(e), senderId)
-			})
-			.catch(e => {
-				console.log("error report: ", e)
-				send(senderId, "Something wrong went wrong when asking gemini 😢")
-			})
+			switch(msgArgs[0]) {
+				case "!v":
+					send(senderId, `app version: ${VERSION}`)
+				break;
+				
+				case "!ch-server": { //change server
+					net.url = msgArgs[1]
+				} break;
+				
+				case "!server": {
+					send(senderId, `server url: ${net.url}`)
+				} break;
+				
+				default:
+					if(net.url === "self") {
+						ai.ask(msg).then(e => {
+							sendMsgsConsecutively(chunkify(e), senderId)
+						})
+						.catch(e => {
+							console.log("error report: ", e)
+							send(senderId, "Something wrong went wrong when asking gemini 😢")
+						})
+					} else {
+						axios.post(net.url, req.body)
+						.then(() => send(senderId, `redirected payload to server: ${net.url}`))
+						.catch(() => send(senderId, "Failed to send payload to given server."))
+					}
+				break;
+			}
+
 			/*
 			.catch(e => {
 				send(senderId, "Something went wrong, try again later.")
@@ -120,7 +152,7 @@ app.get("/webhook", (req, res) => {
 app.get("*", (req,res) => {
   res.send(":)");
 })
-
+/*
 function sendMsgsConsecutively(arr,psid) {
   arr.reduce((p, item, i) => {
     return p.then(() => {
@@ -143,6 +175,16 @@ function sendMsgsConsecutively(arr,psid) {
 			})
   }, Promise.resolve())
 }
+*/
+
+function sendMsgsConsecutively(arr,psid) {
+	arr.forEach((e,i) => {
+		if(!e || e.length === 0)
+			return;
+		console.log("sending array index:",1)
+		send(psid, e)
+	})
+}
 
 function chunkify(str) {
   const portionSize = 2000;
@@ -150,7 +192,7 @@ function chunkify(str) {
 
   for (let i = 0; i < str.length; i += portionSize) {
     chunk.push(str.slice(i, i + portionSize));
-    console.log(chunk[i])
+    console.log("chuck report:",chunk[i])
   }
 
   return chunk;
@@ -165,9 +207,8 @@ function send(id, msg, returnPromise=false,customUrl=null) {
 	}
 	messagesCount += 1;
 
-	const url = typeof customUrl === "string" ? customUrl : "https://graph.facebook.com/v2.6/me/messages";
 
-	const req = axios.post(url, {
+	const req = axios.post(net.output, {
 			recipient: {
 				id: id
 			},
@@ -196,10 +237,12 @@ function send(id, msg, returnPromise=false,customUrl=null) {
 module.exports = {
   app,
   ai,
-  send
+  send,
+  net
 }
 module.exports.default = {
   app,
   ai,
-  send
+  send,
+  net
 }
