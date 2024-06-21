@@ -44,8 +44,7 @@ requiredEnvironmentVariables.forEach((e, i) => {
 if(requiredEnvironmentVariables.some(e => process.env[e] === undefined))
   throw new IncompleteEnvironmentVariableError("One of required environment variable failed to load or not initialized")
 
-const GOOGLE_GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const gemini = ai.init(GOOGLE_GEMINI_API_KEY);
+ai.init(process.env.GOOGLE_GEMINI_API_KEY);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -74,11 +73,18 @@ app.post("/webhook", (req, res) => {
 			send(senderId, "Gemini is thinking...");
 			
 			ai.ask(msg).then(e => {
-				chunkify(e).forEach(i => {
-					send(senderId, i).catch(e=>send(senderId, "Failed to send a chuck 😢").catch(e=>{}))
-				})
+				sendMsgsConsecutively(chunkify(e), senderId)
 			})
-			.catch(e => send(senderId, "Something went wrong, try again later."))
+			.catch(e => {
+				console.log("error report: ", e)
+				send(senderId, "Something wrong went wrong when asking gemini 😢")
+			})
+			/*
+			.catch(e => {
+				send(senderId, "Something went wrong, try again later.")
+				console.log("error report: ",e)
+				})
+			*/
 		}
 	} else {
 		console.log("sent status code 401 Unauthorized")
@@ -112,6 +118,29 @@ app.get("/webhook", (req, res) => {
 app.get("*", (req,res) => {
   res.send(":)");
 })
+
+function sendMsgsConsecutively(arr,psid) {
+  arr.reduce((p, item, i) => {
+    return p.then(() => {
+      return new Promise((resolve,resolve) => {
+				send(senderId, i, true)
+				.catch(e=>{
+					send(senderId, "Failed to send a chuck 😢")
+						.catch(e=>{
+							console.log("Something wrong when posting a message?")
+							return reject()
+						})
+					return resolve()
+				})
+      })
+    })
+    .catch(() => {
+				return send(id, translateString("INTERNAL: failed to send this data 😢"),true)
+				.then(Promise.resolve)
+				.catch(() => console.log("Something is wrong with posting message?"))
+			})
+  }, Promise.resolve())
+}
 
 function chunkify(str) {
   const portionSize = 2000;
