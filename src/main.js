@@ -125,9 +125,9 @@ function sendMsgsConsecutively(arr,psid) {
   arr.reduce((p, item, i) => {
     return p.then(() => {
       return new Promise((resolve,reject) => {
-				send(senderId, i, true)
+				send(psid, i, true)
 				.catch(e=>{
-					send(senderId, "Failed to send a chuck 😢")
+					send(psid, "Failed to send a chuck 😢")
 						.catch(e=>{
 							console.log("Something wrong when posting a message?")
 							return reject()
@@ -137,7 +137,7 @@ function sendMsgsConsecutively(arr,psid) {
       })
     })
     .catch(() => {
-				return send(id, translateString("INTERNAL: failed to send this data 😢"),true)
+				return send(psid, translateString("INTERNAL: failed to send this data 😢"),true)
 				.then(Promise.resolve)
 				.catch(() => console.log("Something is wrong with posting message?"))
 			})
