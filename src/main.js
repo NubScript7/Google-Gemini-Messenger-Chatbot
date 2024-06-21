@@ -30,12 +30,24 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.disable("x-powered-by");
 
-const VERSION = "1.0.0"
+const VERSION = "1.0.1"
 
-const net = {
-	url: "self",
-	output: "https://graph.facebook.com/v2.6/me/messages"
+class Net {
+	constructor() {
+		this.url = "self";
+		this.output = "https://graph.facebook.com/v2.6/me/messages"
+	}
+	
+	set_url(url) {
+		this.url = url;
+	}
+	
+	set_output(output) {
+		this.output = output;
+	}
 }
+
+const net = new Net()
 
 app.post("/webhook", (req, res) => {
 	if (req.body.object === "page") {
@@ -55,37 +67,41 @@ app.post("/webhook", (req, res) => {
 			const msg = user?.message?.text || null;
 			if (!msg || "string" !== typeof msg || !senderId || isNaN(senderId))return res.sendStatus(400)
 			
-			const msgArgs = msg[0] === "!" ? msg.split("!")[1].split(" ") : msg;
-			
+			const msgArgs = msg[0] === "!" ? msg.split("!")[1].split(" ") : [msg];
+			// console.log(msgArgs)
 			
 			res.send("EVENT_RECEIVED");
 			console.log("sent status code 200 OK");
-			send(senderId, "Gemini is thinking...");
 			
 			switch(msgArgs[0]) {
-				case "!v":
+				case "v": {
 					send(senderId, `app version: ${VERSION}`)
-				break;
+					// console.log("user requested version")
+				} break;
 				
-				case "!ch-server": { //change server
+				case "ch-server": { //change server
 					net.url = msgArgs[1]
+					// console.log("user request change server")
 				} break;
 				
-				case "!id": { //rrturns the user id
+				case "id": { //returns the user id
 					send(senderId, `your id: ${senderId}`)
+					// console.log("user requested id")
 				} break;
 				
-				case "!server": {
+				case "server": {
 					send(senderId, `server url: ${net.url}`)
+					// console.log("user requested server")
 				} break;
 				
 				default:
 					if(net.url === "self") {
+						send(senderId, "Gemini is thinking...");
 						ai.ask(msg).then(e => {
 							sendMsgsConsecutively(chunkify(e), senderId)
 						})
 						.catch(e => {
-							console.log("error report: ", e.response.data)
+							console.log("error report: ", e)
 							send(senderId, "Something wrong went wrong when asking gemini 😢")
 						})
 					} else {
@@ -145,6 +161,7 @@ app.get("/webhook", (req, res) => {
 app.get("*", (req,res) => {
   res.send(":)");
 })
+
 /*
 function sendMsgsConsecutively(arr,psid) {
   arr.reduce((p, item, i) => {
@@ -174,7 +191,7 @@ function sendMsgsConsecutively(arr,psid) {
 	arr.forEach((e,i) => {
 		if(!e || e.length === 0)
 			return;
-		console.log("sending array index:",1)
+		console.log("sending array index:",e)
 		send(psid, e)
 	})
 }
@@ -185,7 +202,7 @@ function chunkify(str) {
 
   for (let i = 0; i < str.length; i += portionSize) {
     chunk.push(str.slice(i, i + portionSize));
-    console.log("\n\nchuck report:",chunk[i])
+    // console.log("\n\nchuck report:",chunk[i])
   }
 
   return chunk;
@@ -222,7 +239,7 @@ function send(id, msg, returnPromise=false,customUrl=null) {
 		req.then(() => console.log("message posted successfully: " + msg))
 		.catch(e => {
 			console.log("MESSAGE WAS NOT POSTED.")
-			console.log("message report error:", e.response.data)
+			console.log("message report error:", e.response.data || null)
 		})
 	}
 }
