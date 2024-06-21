@@ -1,9 +1,5 @@
 "use strict"
 
-if(process.argv.includes("--dotenv")){
-  const path = require("path");
-  require("dotenv").config({path: path.resolve(__dirname,"../.env")})
-}
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
@@ -29,24 +25,6 @@ const socketSettings = {
 
 const io = socketIO(server);
 */
-
-const requiredEnvironmentVariables = [
-  "GOOGLE_GEMINI_API_KEY",
-  "FB_PAGE_VERIFY_TOKEN",
-  "FB_PAGE_ACCESS_TOKEN"
-]
-
-/*
-console.log(process.env.GEMINI_API_KEY)
-requiredEnvironmentVariables.forEach((e, i) => {
-  console.log(requiredEnvironmentVariables[i]," : ",process.env[e])
-})
-*/
-
-if(requiredEnvironmentVariables.some(e => process.env[e] === undefined))
-  throw new IncompleteEnvironmentVariableError("One of required environment variable failed to load or not initialized")
-
-ai.init(process.env.GOOGLE_GEMINI_API_KEY);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -77,7 +55,8 @@ app.post("/webhook", (req, res) => {
 			const msg = user?.message?.text || null;
 			if (!msg || "string" !== typeof msg || !senderId || isNaN(senderId))return res.sendStatus(400)
 			
-			const msgArgs = e.message.split("!")[1].split(" ");
+			const msgArgs = msg[0] === "!" ? msg.split("!")[1].split(" ") : msg;
+			
 			
 			res.send("EVENT_RECEIVED");
 			console.log("sent status code 200 OK");
@@ -92,6 +71,10 @@ app.post("/webhook", (req, res) => {
 					net.url = msgArgs[1]
 				} break;
 				
+				case "!id": { //rrturns the user id
+					send(senderId, `your id: ${senderId}`)
+				} break;
+				
 				case "!server": {
 					send(senderId, `server url: ${net.url}`)
 				} break;
@@ -102,7 +85,7 @@ app.post("/webhook", (req, res) => {
 							sendMsgsConsecutively(chunkify(e), senderId)
 						})
 						.catch(e => {
-							console.log("error report: ", e)
+							console.log("error report: ", e.response.data)
 							send(senderId, "Something wrong went wrong when asking gemini 😢")
 						})
 					} else {
@@ -125,6 +108,16 @@ app.post("/webhook", (req, res) => {
 		res.sendStatus(401)
 	}
 });
+
+function triggerAsk(msg,senderId) {
+	ai.ask(msg).then(e => {
+		sendMsgsConsecutively(chunkify(e), senderId)
+	})
+	.catch(e => {
+		console.log("error report: ", e.response.data)
+		send(senderId, "Something wrong went wrong when asking gemini 😢")
+	})
+}
 
 app.get("/webhook", (req, res) => {
 	const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN;
@@ -192,7 +185,7 @@ function chunkify(str) {
 
   for (let i = 0; i < str.length; i += portionSize) {
     chunk.push(str.slice(i, i + portionSize));
-    console.log("chuck report:",chunk[i])
+    console.log("\n\nchuck report:",chunk[i])
   }
 
   return chunk;
@@ -229,7 +222,7 @@ function send(id, msg, returnPromise=false,customUrl=null) {
 		req.then(() => console.log("message posted successfully: " + msg))
 		.catch(e => {
 			console.log("MESSAGE WAS NOT POSTED.")
-			console.log("message report error:", e)
+			console.log("message report error:", e.response.data)
 		})
 	}
 }
@@ -238,11 +231,13 @@ module.exports = {
   app,
   ai,
   send,
-  net
+  net,
+  triggerAsk
 }
 module.exports.default = {
   app,
   ai,
   send,
-  net
+  net,
+  triggerAsk
 }
