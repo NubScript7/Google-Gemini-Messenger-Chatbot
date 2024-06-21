@@ -1,3 +1,5 @@
+"use strict"
+
 if(process.argv.includes("--dotenv")){
   const path = require("path");
   require("dotenv").config({path: path.resolve(__dirname,"../.env")})
@@ -122,7 +124,7 @@ app.get("*", (req,res) => {
 function sendMsgsConsecutively(arr,psid) {
   arr.reduce((p, item, i) => {
     return p.then(() => {
-      return new Promise((resolve,resolve) => {
+      return new Promise((resolve,reject) => {
 				send(senderId, i, true)
 				.catch(e=>{
 					send(senderId, "Failed to send a chuck 😢")
