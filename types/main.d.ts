@@ -1,0 +1,16 @@
+import { geminiSettings } from "./gemini";
+import Net from "./netClass";
+import Servers from "./serversClass";
+import { send, __settings } from "./send";
+declare let isDevRunning: number;
+declare const appServer: any;
+declare const userMaxMessageRequestPerMinute: number;
+declare const maxUsersPerServer: number;
+declare const serverMaxAvailableMassRequests: number;
+declare const chatHistoryMessagePreviewMaxLength: number;
+declare const sendMaxCount: number;
+declare const maxSessionIdleTime: number;
+declare const net: Net;
+declare const servers: Servers;
+declare function updateAvailableServers(): string;
+export { appServer, send, net, servers, geminiSettings, updateAvailableServers, userMaxMessageRequestPerMinute, maxUsersPerServer, serverMaxAvailableMassRequests, chatHistoryMessagePreviewMaxLength, sendMaxCount, maxSessionIdleTime, __settings, isDevRunning };
