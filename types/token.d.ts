@@ -1,2 +1,3 @@
 declare function generateToken(): string;
-export default generateToken;
+declare function range(min?: number, max?: number): number;
+export { generateToken, range };

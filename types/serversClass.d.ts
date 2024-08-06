@@ -1,5 +1,8 @@
+export interface ServersListObject {
+    [serverName: string]: string;
+}
 declare class Servers {
-    servers: object;
+    servers: ServersListObject;
     names: string[];
     strCache: string;
     main: string;

@@ -1,2 +1,2 @@
-declare const getNetworkAddress: () => any;
+declare const getNetworkAddress: () => string | void;
 export default getNetworkAddress;

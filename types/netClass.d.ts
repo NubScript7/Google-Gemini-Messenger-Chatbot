@@ -3,8 +3,8 @@ declare class Net {
     nickname: string;
     output: string;
     constructor();
-    set_url(url: any): void;
-    set_name(name: any): void;
-    set_output(output: any): void;
+    set_url(url: string): void;
+    set_name(name: string): void;
+    set_output(output: string): void;
 }
 export default Net;

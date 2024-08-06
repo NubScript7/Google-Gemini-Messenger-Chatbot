@@ -44,7 +44,6 @@ app.get("/stream-messages",(req,res) => {
 	
 })
 
-const module = typeof module !== undefined ? module : undefined
 
 function listen(port = 2468) {
 	app.listen(port, () => {

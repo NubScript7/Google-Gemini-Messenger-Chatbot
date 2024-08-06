@@ -1,3 +1,2 @@
-declare function setAiSocketMessageHandler(func: any): void;
-declare const initAISocket: (io: any) => any;
-export { initAISocket, setAiSocketMessageHandler };
+import { Socket } from "socket.io";
+export default function ioHandler(socket: Socket): boolean | undefined;
