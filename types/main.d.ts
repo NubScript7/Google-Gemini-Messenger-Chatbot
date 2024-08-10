@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { geminiSettings } from "./gemini";
 import Net from "./netClass";
 import Connections from "./connectionsClass";

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare function setRoot(path: string): void;
 export declare function resolvePath(path: string): string;
 export declare function generateKey(password: string, customSalt?: string, saltRounds?: number): Buffer;

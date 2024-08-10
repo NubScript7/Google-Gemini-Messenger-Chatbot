@@ -17,17 +17,18 @@ import {
     helpStr,
     chatHistoryMessagePreviewMaxLength,
     askGemini,
+    BOT_TYPES
 } from "./main";
 import {
  SocketConnectionsReferenceNotYetInitializedError
 } from "./errors";
 
-import { BOT_TYPES } from "./botTypes"
-
 type processMessageUtilsObject = {
     msg: string,
     senderId: number | string
 }
+
+export let socketConnectionsReference: Connections;
 
 export async function processMessage(utils: processMessageUtilsObject, connection: Connection) {
     const output: string[] = [];
@@ -257,8 +258,6 @@ export async function processMessage(utils: processMessageUtilsObject, connectio
     
     return {output, isCommand}
 }
-
-let socketConnectionsReference: Connections;
 
 export function setupSocketConnectionsObject(connectionsReference: Connections) {
     socketConnectionsReference = connectionsReference;

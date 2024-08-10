@@ -23,8 +23,13 @@ import chunkify from "./chunkify";
 import { msToSec, secToMin } from "./convert";
 import { handleMessengerUserMessage } from "./handleUserMessage";
 
-export const VERSION: string = "1.1.5";
+export const VERSION: string = "1.5.5";
 export const upStartTime: number = Date.now();
+
+export enum BOT_TYPES {
+    Messenger = "Messenger",
+    Frontend = "Frontend",
+  }
 
 interface MainRuntileUtils {
     isDevRunning: boolean;
@@ -92,7 +97,8 @@ const mainRuntimeUtils = {
 
 
 const corsOptions = {
-  origin: function (origin: any, callback: any) {
+  origin: [ "http://localhost:7700" ]
+  /*function (origin: any, callback: any) {
     
     const origins = [ "http://localhost:7700" ];
     
@@ -100,7 +106,8 @@ const corsOptions = {
     
     callback( error, origins);
     
-  },
+  }
+  */,
   method: [ "POST", "GET" ]
 }
 
@@ -338,37 +345,6 @@ app.get("/generative-ai/api/v1/webhook", (req: Request, res: Response) => {
 app.all("*", (req, res) => {
     res.status(404).send(":)");
 });
-
-/*
-function sendMsgs(arr, psid) {
-	arr.forEach(e => {
-		send(e, psid);
-	});
-}
-*/
-
-/*
-function sendMsgsConsecutively(arr,psid) {
-  arr.reduce((p, item, i) => {
-    return new Promise((resolve,reject) => {
-				send(psid, i, true)
-				.catch(e=>{
-					send(psid, "Failed to send a chuck 😢")
-						.catch(e=>{
-							console.log("Something wrong when posting a message?")
-							return reject()
-						})
-					return resolve()
-				})
-      })
-    .catch(() => {
-				return send(psid, translateString("INTERNAL: failed to send this data 😢"),true)
-				.then(Promise.resolve)
-				.catch(() => console.log("Something is wrong with posting message?"))
-			})
-  }, Promise.resolve())
-}
-*/
 
 export {
     appServer,
