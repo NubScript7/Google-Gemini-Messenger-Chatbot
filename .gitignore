@@ -47,9 +47,6 @@ web_modules/
 # Optional npm cache directory
 .npm
 
-#rollup cache
-.rollup.cache/
-
 node_modules/
 
 # Optional eslint cache
@@ -129,3 +126,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+coverage
+Gitrepo
+.env
