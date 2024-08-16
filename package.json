@@ -4,6 +4,7 @@
   "description": "A Chatbot for Facebook Messenger using Facebook Messenger Chat API and Google Gemini AI API",
   "main": "dist/index.js",
   "scripts": {
+    "ls": "echo $(ls)",
     "test": "jest",
     "test:server": "node dist/testserver.js",
     "test:api": "node tests/api-realtest.js",
