@@ -9,7 +9,7 @@ module.exports = {
     filename: "../build/bundle.min.js",
   },
   target: "node",
-  mode: "development",
+  mode: "production",
   /*
   stats: {
     errorDetails: true
