@@ -6,13 +6,10 @@
   "scripts": {
     "test": "jest",
     "test:server": "node dist/testserver.js",
-    "test:server-bun": "node src/testserver.ts",
     "test:api": "node tests/api-realtest.js",
     "start": "node build/bundle.min.js",
-    "start:preview": "node src/index.ts",
-    "start:bun": "node src/index.ts --devrun",
-    "start:bun-dev": "nodemon -w 'src/*' --exec 'bun run start:bun'",
-    "start:preview-dev": "npm run compile && npm run start:preview",
+    "start:preview": "node dist/index",
+    "start:preview-dev": "npm run compile || true && npm run start:preview",
     "start:watch-dev": "nodemon -w 'src/*' -e 'ts' --exec 'npm run ci'",
     "start:dev": "nodemon -w 'dist/*' -e 'js' --exec 'npm run start:preview -- --devrun'",
     "compile": "npx tsc",
@@ -42,12 +39,20 @@
   "dependencies": {
     "@google/generative-ai": "^0.12.0",
     "axios": "^1.7.2",
+    "bufferutil": "^4.0.8",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "html-webpack-plugin": "^5.6.0",
     "prompt-sync": "^4.2.0",
-    "dotenv": "^16.4.5"
+    "socket.io": "^4.7.5",
+    "utf-8-validate": "^5.0.10"
+  },
+  "jest-disabled": {
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    }
   },
   "author": "nubscript7",
   "license": "MIT",
@@ -58,13 +63,13 @@
   "devDependencies": {
     "@eslint/js": "^9.5.0",
     "eslint": "^9.5.0",
-    "globals": "^15.6.0",
-    "nodemon": "^3.1.3",
-    "jest": "^27.5.1",
-    "uglify-js": "^3.18.0",
-    "webpack-cli": "^5.1.4",
     "glob": "^7.2.3",
+    "globals": "^15.6.0",
+    "jest": "^27.5.1",
+    "nodemon": "^3.1.3",
     "typescript": "^5.4.5",
-    "webpack": "^5.92.0"
+    "uglify-js": "^3.18.0",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4"
   }
 }

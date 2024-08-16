@@ -1,4 +1,4 @@
-9<h1 align=center> Google-Gemini-Messenger-Chatbot </h1>
+<h1 align=center> Google-Gemini-Messenger-Chatbot </h1>
 <p align="center"> A Chatbot for Facebook Messenger using Facebook Graph API and Google Gemini AI API</p>
 
 <div align="center">
