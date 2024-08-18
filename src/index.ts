@@ -28,10 +28,12 @@ setRoot(path.resolve(__dirname, "../"));
 
 if (process.argv.includes("--devrun")) {
   mainRuntimeUtils.isDevRunning = true;
-  mainRuntimeUtils.sessionMaxAge = 30;
-  mainRuntimeUtils.workerInterval = 15;
+  mainRuntimeUtils.sessionMaxAge = 15;
+  mainRuntimeUtils.warningTimeBeforeDeletion = 5;
+  mainRuntimeUtils.workerInterval = 5;
   net.set_output(process.env.localTestServer ? process.env.localTestServer : "http://localhost:2468/message");
   console.log("RUNNING IN DEV MODE.");
+  console.log("SESSION CLEANUP WILL BE QUICKER");
 }
 
 if(process.argv.includes("--emulate-ai")) {

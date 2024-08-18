@@ -1,0 +1,51 @@
+body {
+ margin: 0;
+ width: 100vw;
+ height: 100%;
+}
+
+.hidden {
+  display: none;
+  
+}
+
+.log-entry {
+  
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+  
+}
+
+.log-entry:last-child() {
+  
+  border-bottom: none;
+  
+}
+
+.timestamp {
+  
+  font-size: 0.8rem;
+  font-color: #888
+  
+}
+
+.log-warning {
+  
+  color: #FFAC1B;
+  
+}
+
+.log-error {
+  
+  color: #CA4545;
+  
+}
+
+
+code {
+  background: #4A4B58;
+  padding: 3px 6px 3px 6px;
+  border-radius: 3px;
+  color: #FFFFFF;
+}
+

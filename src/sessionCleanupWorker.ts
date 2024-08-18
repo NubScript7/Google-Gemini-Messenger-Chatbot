@@ -1,8 +1,8 @@
-import { BOT_TYPES } from "./botTypes";
 import Connections from "./connectionsClass";
 import { secToMs } from "./convert";
 import { SessionCleanupWorkerCannotInitializeInvalidConfig } from "./errors";
 import { send } from "./send";
+import { BOT_TYPES } from "./main";
 
 export interface sessionCleaupWorkerConfig {
   /**
@@ -21,7 +21,7 @@ export interface sessionCleaupWorkerConfig {
   notifyMessage: string;
 
   /**
-   * The frequency/interval of the session cleanup worker.
+   * The frequency/interval of the session cleanup worker when checking idle sessions.
    * Value is treated as seconds
    */
   workerInterval: number;
@@ -79,14 +79,13 @@ function sessionCleanupWorker() {
       user.lastReqTime + Math.floor(secToMs(localConfigCopy.sessionMaxAge));
     const dateNow = Date.now();
 
-    
     if (user.isDestroyed())
         return;
       
       if (
         localConfigCopy.notifySession &&
         !issuedWarningIds.has(id) &&
-        sessionAge - localConfigCopy.warningTimeBeforeDeletion <= dateNow
+        (sessionAge - localConfigCopy.warningTimeBeforeDeletion) <= dateNow
       ) {
         user.botType === BOT_TYPES.Messenger
           ? send({ id, msg: localConfigCopy.notifyMessage })
@@ -98,9 +97,9 @@ function sessionCleanupWorker() {
            send({ id, msg: "Connection terminated." }) :
            void 0; /* not yet implemented */
         
-           issuedWarningIds.delete(id);
-        localConfigCopy.connections.destroySession(
-          user.botType === BOT_TYPES.Messenger ? parseInt(id) : id
+          issuedWarningIds.delete(id);
+          localConfigCopy.connections.destroySession(
+            user.botType === BOT_TYPES.Messenger ? parseInt(id) : id
           );
       }
     

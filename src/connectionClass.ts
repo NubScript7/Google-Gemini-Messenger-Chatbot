@@ -1,4 +1,4 @@
-import { BOT_TYPES } from "./botTypes";
+import { BOT_TYPES } from "./main";
 import { secToMs } from "./convert";
 import { ConnectionCannotCreateNewClientConnectionInvalidIdError, ConnectionNotYetInitializedOrMessageWasEmptyError, GeminiSessionNotYetInitializedError } from "./errors";
 import { GeminiSession } from "./gemini";
@@ -55,10 +55,8 @@ class Connection {
     return this.#session !== undefined;
   }
 
-  /**
-   * @returns the id of this connection.
-   */
-  getId() {
+
+  get id() {
     this.#setLastReqTimeNow()
     return this.#userId;
   }

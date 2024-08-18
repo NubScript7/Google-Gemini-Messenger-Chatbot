@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GGMC API TESTER</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <script src="bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+  
+  <div class="container-fluid h-100">
+    
+    <h1 class="text-center">GGMC MESENGER WEBHOOK TESTER</h1>
+    
+    <div class="input-group mb-3">
+      
+      <span class="input-group-text">Your Message:</span>
+      <input type="text" class="message form-control form-control-lg" type="text" placeholder="your message" value="!help">
+      <button class="send btn btn-primary">send</button>
+      
+    </div>
+    
+    <div class="input-group mb-3">
+      
+      <span class="input-group-text">Your Id:</span>
+      <input type="text" class="number form-control form-control-lg" type="number" value="123" placeholder="number">
+      
+    </div>
+
+    <div class="btn-group" role="group">
+      <button class="btn btn-primary clear-log">Clear Log</button>
+      <button class="btn btn-primary clear-log-oldest">Remove Oldest</button>
+      <button class="btn btn-primary clear-log-newest">Remove Newest</button>
+    </div>
+    
+    <div class="msgs mt-5">
+      <div class="rows">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <p class="text-center mb-0">MESSAGES</p>
+              </div>
+            <div class="card-body h-100" id="log-container">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+  </div>
+  <script src="showdown.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

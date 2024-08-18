@@ -24,7 +24,7 @@ import {
 } from "./errors";
 
 import { notEqual } from "assert";
-import { BOT_TYPES } from "./botTypes";
+import { BOT_TYPES } from "./main";
 
 const generationConfig: {
   temperature: number;
@@ -294,7 +294,10 @@ class GeminiSession {
     this.#id = id;
     this.createSession();
   }
-
+  
+  /**
+   * Used to get history from the current session
+  */
   getHistory() {
     if (!this.hasSession())
       throw new GeminiSessionNotYetInitializedError(
@@ -302,7 +305,10 @@ class GeminiSession {
       );
     return this.#session?.getHistory();
   }
-
+  
+  /**
+   * Used to generate and retrieve response from gemini in string format
+  */
   async ask(message: string) {
     if (!message || message == "" || "object" !== typeof this.#session)
       throw new GeminiSessionCannotAskMessageWasEmptyOrNotInitialized(
@@ -314,7 +320,10 @@ class GeminiSession {
     const response = await this.#session.sendMessage(message);
     return response?.response?.text();
   }
-
+  
+  /**
+   * Used to generate and retrieve response from gemini in chunks
+  */
   async askStream(message: string) {
     if (!message || message == "" || "object" !== typeof this.#session)
       throw new GeminiSessionCannotAskMessageWasEmptyOrNotInitialized(
@@ -325,7 +334,5 @@ class GeminiSession {
     return streamObject?.stream;
   }
 }
-
-const session = new GeminiSession("Messenger", "hello");
 
 export { GeminiSession, geminiSettings };

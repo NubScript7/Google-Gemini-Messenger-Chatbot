@@ -86,7 +86,7 @@ const mainRuntimeUtils = {
     isDevRunning: false,
     devLogPassword: undefined,
     apiUrl: "",
-    blockedTimeSeconds: 150, //seconds = 2.5 minutes
+    blockedTimeSeconds: 200, //seconds = 3 minutes
     sessionMaxAge: 300, //seconds = 5 minutes
     notifySession: true,
     workerInterval: 60, //seconds = 1 minute
@@ -260,7 +260,15 @@ app.get("/favicon.ico", (req, res) => {
 
 /* setAiSocketMessageHandler(handleUserMessage); */
 
-app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) => {
+app.post("/webhook", (req, res) => {
+    res.redirect(308, "/generative-ai/api/v1/webhook");
+})
+
+app.get("/webhook", (req, res) => {
+    res.redirect(308, "/generative-ai/api/v1/webhook");
+})
+
+app.post("/generative-ai/api/v1/webhook", async (req, res) => {
     if (process.env.NO_NEW_REQUESTS) return;
     const request: UserRequestBody = req.body;
 
@@ -319,7 +327,7 @@ app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) =>
     }
 });
 
-app.get("/generative-ai/api/v1/webhook", (req: Request, res: Response) => {
+app.get("/generative-ai/api/v1/webhook", (req, res) => {
     const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN || "@default";
     // Parse the query params
     const mode: string = req.query["hub.mode"] as string;

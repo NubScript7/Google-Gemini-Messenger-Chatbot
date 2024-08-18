@@ -7,7 +7,6 @@
     "ls": "echo $(ls)",
     "test": "jest",
     "test:server": "node dist/testserver.js",
-    "test:api": "node tests/api-realtest.js",
     "start": "node build/bundle.min.js",
     "start:preview": "node dist/index",
     "start:preview-dev": "npm run compile || true && npm run start:preview",

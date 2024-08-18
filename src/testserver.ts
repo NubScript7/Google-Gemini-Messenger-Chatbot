@@ -1,23 +1,15 @@
 import express from "express";
 import { EventEmitter } from "events";
 import cors from "cors";
+import { resolve } from "path";
 
 const app = express();
 const messagesEvent = new EventEmitter();
 
 app.use(express.json());
-app.use(cors())
+app.use(express.static(resolve(__dirname, "../testserver-assests")));
+app.use(cors());
 app.use(express.urlencoded({extended: true}));
-
-app.get("/", (req, res) => {
-	console.log(req?.body);
-	res.sendStatus(200)
-});
-
-app.post("/", (req, res) => {
-	console.log(req?.body);
-	res.sendStatus(200)
-});
 
 app.post("/message", (req, res) => {
 	console.log("\x1b[32m OUTPUT \x1b[0m", req.body?.message?.text || req?.body)
@@ -51,6 +43,10 @@ function listen(port = 2468) {
 	})
 }
 
+listen();
+
+/*
+
 if(typeof require === "function" && require.main === module)
 	listen()
 
@@ -58,3 +54,4 @@ export {
 	app,
 	listen
 }
+*/

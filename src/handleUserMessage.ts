@@ -22,6 +22,7 @@ import {
 import {
  SocketConnectionsReferenceNotYetInitializedError
 } from "./errors";
+import { reactivateConnection } from "./sessionCleanupWorker";
 
 type processMessageUtilsObject = {
     msg: string,
@@ -283,7 +284,7 @@ export async function handleSocketFrontendUserMessage(msg: string, socketId: str
             return ["Oh no! Something went wrong when requesting for a new session, please try again later😢..."];
         }
     }
-    
+
     connection.lastActiveTime = Date.now();
     
     /* no support for server changing for frontend yet */
@@ -313,12 +314,12 @@ export async function handleMessengerUserMessage(msg: string, connectionId: numb
     }
     
     connection.lastActiveTime = Date.now();
+    reactivateConnection(connection.id);
 
     const url = connection?.serverUrl;
 
     if (url !== "self") return redirectRequest(url as string, body, connectionId);
 
-    
     const obj = await processMessage({msg, senderId: connectionId}, connection);
     if(typeof obj === "object" && obj.output)
         return obj.output;
