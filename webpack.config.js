@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const path = require("path");
 
 module.exports = {
-  entry: "./dist/index.js",
+  entry: path.resolve(__dirname, "dist/index.js"),
   output: {
     // output bundle will be in `dist/buit.js`
     filename: "../build/bundle.min.js",
@@ -15,6 +15,9 @@ module.exports = {
     errorDetails: true
   },
   */
+  resolve: {
+    modules: ["node_modules", path.resolve(__dirname, "src/node_modules")]
+  },
   
   //watch: true
   
