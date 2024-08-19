@@ -15,7 +15,7 @@ export interface sessionCleaupWorkerConfig {
      */
     notifyMessage: string;
     /**
-     * The frequency/interval of the session cleanup worker.
+     * The frequency/interval of the session cleanup worker when checking idle sessions.
      * Value is treated as seconds
      */
     workerInterval: number;

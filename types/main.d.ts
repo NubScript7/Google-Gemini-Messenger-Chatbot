@@ -7,6 +7,10 @@ import Servers from "./serversClass";
 import { __settings } from "./send";
 export declare const VERSION: string;
 export declare const upStartTime: number;
+export declare enum BOT_TYPES {
+    Messenger = "Messenger",
+    Frontend = "Frontend"
+}
 interface MainRuntileUtils {
     isDevRunning: boolean;
     apiUrl: string;

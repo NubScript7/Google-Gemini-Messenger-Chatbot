@@ -260,15 +260,7 @@ app.get("/favicon.ico", (req, res) => {
 
 /* setAiSocketMessageHandler(handleUserMessage); */
 
-app.post("/webhook", (req, res) => {
-    res.redirect(308, "/generative-ai/api/v1/webhook");
-})
-
-app.get("/webhook", (req, res) => {
-    res.redirect(308, "/generative-ai/api/v1/webhook");
-})
-
-app.post("/generative-ai/api/v1/webhook", async (req, res) => {
+app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) => {
     if (process.env.NO_NEW_REQUESTS) return;
     const request: UserRequestBody = req.body;
 
@@ -327,7 +319,11 @@ app.post("/generative-ai/api/v1/webhook", async (req, res) => {
     }
 });
 
-app.get("/generative-ai/api/v1/webhook", (req, res) => {
+app.post("/webhook", (req, res) => {
+    res.redirect(308, "/generative-ai/api/v1/webhook");
+})
+
+app.get("/generative-ai/api/v1/webhook", (req: Request, res: Response) => {
     const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN || "@default";
     // Parse the query params
     const mode: string = req.query["hub.mode"] as string;
@@ -349,6 +345,11 @@ app.get("/generative-ai/api/v1/webhook", (req, res) => {
         res.sendStatus(403);
     }
 });
+
+app.get("/webhook", (req, res) => {
+    res.redirect(308, "/generative-ai/api/v1/webhook");
+});
+
 
 app.all("*", (req, res) => {
     res.status(404).send(":)");

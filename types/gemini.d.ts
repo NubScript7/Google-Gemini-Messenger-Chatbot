@@ -1,5 +1,5 @@
 import { ChatSession, Content } from "@google/generative-ai";
-import { BOT_TYPES } from "./botTypes";
+import { BOT_TYPES } from "./main";
 interface GeminiSessionOptions {
     botType: BOT_TYPES;
     instruction?: string;
@@ -89,8 +89,17 @@ declare class GeminiSession {
      * Used to destroy then create a new session
      */
     wipeSession(id: geminiSessionId): void;
+    /**
+     * Used to get history from the current session
+    */
     getHistory(): Promise<Content[]> | undefined;
+    /**
+     * Used to generate and retrieve response from gemini in string format
+    */
     ask(message: string): Promise<string>;
+    /**
+     * Used to generate and retrieve response from gemini in chunks
+    */
     askStream(message: string): Promise<AsyncGenerator<import("@google/generative-ai").EnhancedGenerateContentResponse, any, unknown>>;
 }
 export { GeminiSession, geminiSettings };

@@ -1,4 +1,4 @@
-import { BOT_TYPES } from "./botTypes";
+import { BOT_TYPES } from "./main";
 /**
  * Used to create a new client connection
  *
@@ -20,10 +20,7 @@ declare class Connection {
      * @returns a boolean indication the connection has a session initialized.
      */
     hasSession(): boolean;
-    /**
-     * @returns the id of this connection.
-     */
-    getId(): string | number;
+    get id(): string | number;
     /**
      * @returns the chat history so far of this connection.
      */

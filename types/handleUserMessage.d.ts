@@ -4,6 +4,7 @@ type processMessageUtilsObject = {
     msg: string;
     senderId: number | string;
 };
+export declare let socketConnectionsReference: Connections;
 export declare function processMessage(utils: processMessageUtilsObject, connection: Connection): Promise<number | {
     output: string[];
     isCommand: boolean;
