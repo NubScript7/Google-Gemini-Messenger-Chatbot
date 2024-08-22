@@ -36,6 +36,10 @@ if (process.argv.includes("--devrun")) {
   console.log("SESSION CLEANUP WILL BE QUICKER");
 }
 
+if(process.env.DEBUG_MODE === "verbose") {
+  console.log("EVERY WEBHOOK REQUESTS WILL BE LOGGED.")
+}
+
 if(process.argv.includes("--emulate-ai")) {
   geminiSettings.emulated = true;
   console.log("EMULATING GEMINI'S RESPONSE.");

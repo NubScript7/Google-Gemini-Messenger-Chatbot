@@ -265,9 +265,13 @@ app.get("/favicon.ico", (req, res) => {
 
 /* setAiSocketMessageHandler(handleUserMessage); */
 
-app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) => {
+async function messengerPostWebhookHandler(req: Request, res: Response) {
     if (process.env.NO_NEW_REQUESTS) return;
     const request: UserRequestBody = req.body;
+    
+    if(process.env.DEBUG_MODE === "verbose") {
+        console.dir(request, {depth: null});
+    }
 
     if (request.object === "page") {
         const ea: object | null = request.entry || null;
@@ -311,6 +315,9 @@ app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) =>
 
             try {
                 const output = await handleMessengerUserMessage(msg, senderId, req.body);
+                if(process.env.DEBUG_MODE === "verbose") {
+                    console.dir(output, {depth: null});
+                }
                 
                 if(typeof output === "object" && Array.isArray(output) && output.length >= 1) {
                     for (const msg of output) {
@@ -326,13 +333,9 @@ app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) =>
         console.log("sent status code 401 Unauthorized");
         res.sendStatus(401);
     }
-});
+};
 
-app.post("/webhook", (req, res) => {
-    res.redirect(308, "/generative-ai/api/v1/webhook");
-})
-
-app.get("/generative-ai/api/v1/webhook", (req: Request, res: Response) => {
+function messengerVerifyWebhookHandler(req: Request, res: Response) {
     const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN || "@default";
     // Parse the query params
     const mode: string = req.query["hub.mode"] as string;
@@ -353,11 +356,13 @@ app.get("/generative-ai/api/v1/webhook", (req: Request, res: Response) => {
     } else {
         res.sendStatus(403);
     }
-});
+};
 
-app.get("/webhook", (req, res) => {
-    res.redirect(308, "/generative-ai/api/v1/webhook");
-});
+app.post("/generative-ai/api/v1/webhook", messengerPostWebhookHandler);
+app.post("/webhook", messengerPostWebhookHandler);
+
+app.get("/generative-ai/api/v1/webhook", messengerVerifyWebhookHandler);
+app.get("/webhook", messengerVerifyWebhookHandler);
 
 
 app.all("*", (req, res) => {
