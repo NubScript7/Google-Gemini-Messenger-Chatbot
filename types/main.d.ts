@@ -5,7 +5,7 @@ import Connections from "./connectionsClass";
 import Connection from "./connectionClass";
 import Servers from "./serversClass";
 import { __settings } from "./send";
-export declare const VERSION: string;
+export declare const VERSION = "1.5.5";
 export declare const upStartTime: number;
 export declare enum BOT_TYPES {
     Messenger = "Messenger",
@@ -35,6 +35,7 @@ declare const connections: Connections;
 export declare const LOGS: string[];
 declare function updateAvailableServers(): string;
 export declare function no_new_requests(): void;
+export declare function relisten_on_new_requests(): void;
 export declare function redirectRequest(url: string, body: object, id: number): void;
 export declare function askGemini(connection: Connection, psid: number, msg: string): void;
 export declare const helpStr: string;

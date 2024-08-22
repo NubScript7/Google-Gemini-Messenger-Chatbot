@@ -23,7 +23,7 @@ import chunkify from "./chunkify";
 import { msToSec, secToMin } from "./convert";
 import { handleMessengerUserMessage } from "./handleUserMessage";
 
-export const VERSION: string = "1.5.5";
+export const VERSION = "1.5.5";
 export const upStartTime: number = Date.now();
 
 export enum BOT_TYPES {
@@ -166,7 +166,7 @@ io.on("connection", socketHandler);
 app.use(express.json());
 app.use(
     express.urlencoded({
-        extended: true,
+         extended: true,
     })
 );
 
@@ -193,6 +193,11 @@ function updateAvailableServers(): string {
 export function no_new_requests(): void {
     //@ts-ignore
     process.env.NO_NEW_REQUESTS = true;
+}
+
+export function relisten_on_new_requests() {
+    //@ts-ignore
+    porcess.env.NO_NEW_REQUESTS = false;
 }
 
 export function redirectRequest(url: string, body: object, id: number): void {
@@ -304,14 +309,18 @@ app.post("/generative-ai/api/v1/webhook", async (req: Request, res: Response) =>
                 });
             }
 
-            const output = await handleMessengerUserMessage(msg, senderId, req.body);
-            
-            if(typeof output === "object" && Array.isArray(output) && output.length >= 1) {
-                for (const msg of output) {
-                    await send({id: senderId, msg})
+            try {
+                const output = await handleMessengerUserMessage(msg, senderId, req.body);
+                
+                if(typeof output === "object" && Array.isArray(output) && output.length >= 1) {
+                    for (const msg of output) {
+                        await send({id: senderId, msg})
+                    }
                 }
+                res.send("EVENT_RECEIVED");
+            } catch {
+                res.sendStatus(400);
             }
-            res.send("EVENT_RECEIVED");
         }
     } else {
         console.log("sent status code 401 Unauthorized");
@@ -354,6 +363,8 @@ app.get("/webhook", (req, res) => {
 app.all("*", (req, res) => {
     res.status(404).send(":)");
 });
+
+
 
 export {
     appServer,

@@ -24,7 +24,7 @@ class Connections {
    * @public
    */
   getUser(id: number | string) {
-    if (!this.userExists(id)) return undefined;
+    if (!this.userExists(id))return;
     return this.#connections[id];
   }
 

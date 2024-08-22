@@ -23,7 +23,6 @@ import {
   GeminiSessionAlreadyInitializedError
 } from "./errors";
 
-import { notEqual } from "assert";
 import { BOT_TYPES } from "./main";
 
 const generationConfig: {
