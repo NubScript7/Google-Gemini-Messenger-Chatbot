@@ -283,13 +283,20 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
             const senderId = user?.sender?.id || null;
             const msg = user?.message?.text || null;
 
+            console.log({
+                user,
+                senderId,
+                msg
+            })
             if (
                 !user ||
                 typeof user !== "object" ||
                 Array.isArray(user) ||
+                
                 !senderId ||
                 isNaN(senderId) ||
-                typeof senderId !== "number" ||
+                typeof senderId !== "string" ||
+                
                 !msg ||
                 "string" !== typeof msg ||
                 msg.length === 0
@@ -325,6 +332,7 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
                     }
                 }
                 res.send("EVENT_RECEIVED");
+            
             } catch {
                 res.sendStatus(400);
             }
