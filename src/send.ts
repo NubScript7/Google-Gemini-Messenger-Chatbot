@@ -10,6 +10,7 @@ interface SettingUtils {
   net: Net;
   connections: Connections;
   timeout: number;
+  offline: boolean;
 }
 
 interface MessagePayload {
@@ -24,7 +25,37 @@ const __settings = {} as SettingUtils;
  * @throws if the total message count exceeded the specified max messages
  * @throws any axios errors
  */
+
+type sendApiPayloadObject = {
+  id: string | number,
+  msg: string
+}
+
+function sendApi(payload: sendApiPayloadObject) {
+  const req = axios.post(
+    __settings.net.output,
+    {
+      recipient: {
+        id: payload.id
+      },
+      message: {
+        text: payload.msg || "INTERNAL: response was empty.",
+      },
+    },
+    {
+      timeout: __settings.timeout,
+      params: {
+        access_token: process.env.FB_PAGE_ACCESS_TOKEN,
+      },
+    }
+  );
+}
+
 function send(payload: MessagePayload) {
+  
+  if(__settings.offline)
+    return;
+  
   if (__settings.totalSentMsgs >= __settings.maxMessages)
     throw new SendFunctionMessageCountExceededError("Message limit exceeded.");
 
@@ -52,7 +83,7 @@ function send(payload: MessagePayload) {
 }
 
 /**
- * Sends an array of messges to a messenger client
+ * Sends an array of messages to a messenger client
  * @returns `true` to signal that all of the messages has been sent
  */
 async function sendMsgsConsecutively(arr: string[], psid: number) {
@@ -61,7 +92,7 @@ async function sendMsgsConsecutively(arr: string[], psid: number) {
         await send({ id: psid, msg });
       } catch (e: any) {
         console.log("error report:", e?.response?.data || e, "code:", e?.code); //axios error or other error
-        send({ id: psid, msg: "Failed to send this message 😢" }).catch((e) =>
+        send({ id: psid, msg: "Failed to send this message 😢" })?.catch((e) =>
           console.log("error report:", e?.response?.data || e, "code:", e?.code)
         );
       }

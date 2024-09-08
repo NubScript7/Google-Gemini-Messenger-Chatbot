@@ -9,6 +9,18 @@ import {
   connections
 } from "./main";
 
+/*
+	the
+	quick
+	brown
+	fox
+	jumps
+	over
+	the
+	lazy
+	dog
+*/
+
 import { IncompleteEnvironmentVariableError } from "./errors";
 import getInternalHostname from "./hostname";
 import path from "path";
@@ -128,3 +140,5 @@ __settings.net = net;
 appServer.listen(process.env.PORT || 3000, () => {
   console.log("app is healty and running!");
 });
+
+//ye

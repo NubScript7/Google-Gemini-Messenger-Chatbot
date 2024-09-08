@@ -41,7 +41,7 @@ export interface sessionCleaupWorkerConfig {
 }
 
 let workerIntervalId: ReturnType<typeof setInterval> | undefined;
-let localConfigCopy: sessionCleaupWorkerConfig;
+let config: sessionCleaupWorkerConfig;
 const warningTimeBeforeDeletion = secToMs(30); //30 seconds into ms
 const issuedWarningIds: Set<number | string> = new Set();
 
@@ -68,7 +68,7 @@ export function destroySessionCleanupWorker() {
 }
 
 function sessionCleanupWorker() {
-  const users = localConfigCopy.connections.getUsers();
+  const users = config.connections.getUsers();
   const userIds = Object.keys(users);
 
   if (userIds.length === 0) return;
@@ -76,39 +76,48 @@ function sessionCleanupWorker() {
   userIds.forEach((id) => {
     const user = users[id];
     const sessionAge =
-      user.lastReqTime + Math.floor(secToMs(localConfigCopy.sessionMaxAge));
+      user.lastReqTime + Math.floor(secToMs(config.sessionMaxAge));
     const dateNow = Date.now();
+    const isApplicableForWarning = (sessionAge - config.warningTimeBeforeDeletion) <= dateNow
+    const isSessionIdle = sessionAge <= dateNow
+    const hasBeenWarned = issuedWarningIds.has(id);
 
     if (user.isDestroyed())
         return;
-      
-      if (
-        localConfigCopy.notifySession &&
-        !issuedWarningIds.has(id) &&
-        (sessionAge - localConfigCopy.warningTimeBeforeDeletion) <= dateNow
-      ) {
-        user.botType === BOT_TYPES.Messenger
-          ? send({ id, msg: localConfigCopy.notifyMessage })
-          : void 0; /* not yet implemented */
-        issuedWarningIds.add(id);
-      } else if (sessionAge <= dateNow) {
-        if(localConfigCopy.notifySession)
-          user.botType === BOT_TYPES.Messenger ?
-           send({ id, msg: "Connection terminated." }) :
-           void 0; /* not yet implemented */
+    
+    if(isApplicableForWarning && hasBeenWarned === false) {
+        if(config.notifySession) {
+            switch(user.botType) {
+                case BOT_TYPES.Messenger: {
+                    send({ id, msg: config.notifyMessage })
+                } break;
+            }
+        }
         
-          issuedWarningIds.delete(id);
-          localConfigCopy.connections.destroySession(
-            user.botType === BOT_TYPES.Messenger ? parseInt(id) : id
-          );
-      }
+        issuedWarningIds.add(id);
+        return;
+    }
+    
+    if (isSessionIdle) {
+        
+        if(config.notifySession) {
+          switch(user.botType) {
+            case BOT_TYPES.Messenger: {
+                send({ id, msg: "Connection terminated." })
+            } break;
+          }
+        }
+        
+        issuedWarningIds.delete(id);
+        config.connections.destroySession(id);
+    }
     
     
   });
 }
 
 export function initializeSessionCleanupWorker(
-  config: sessionCleaupWorkerConfig
+  workerConfig: sessionCleaupWorkerConfig
 ) {
   const {
     sessionMaxAge,
@@ -116,7 +125,7 @@ export function initializeSessionCleanupWorker(
     notifyMessage,
     workerInterval,
     connections,
-  } = config;
+  } = workerConfig;
   if (
     !sessionMaxAge ||
     !notifySession ||
@@ -135,7 +144,7 @@ export function initializeSessionCleanupWorker(
       "Cannot initialize session cleanup worker, the config was invalid."
     );
 
-  localConfigCopy = config;
+  config = workerConfig;
   workerIntervalId = setInterval(sessionCleanupWorker, secToMs(workerInterval));
 }
 

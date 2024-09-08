@@ -2,10 +2,9 @@
 import { geminiSettings } from "./gemini";
 import Net from "./netClass";
 import Connections from "./connectionsClass";
-import Connection from "./connectionClass";
 import Servers from "./serversClass";
 import { __settings } from "./send";
-export declare const VERSION = "1.5.5";
+export declare const VERSION = "1.6.0";
 export declare const upStartTime: number;
 export declare enum BOT_TYPES {
     Messenger = "Messenger",
@@ -37,8 +36,9 @@ declare function updateAvailableServers(): string;
 export declare function no_new_requests(): void;
 export declare function relisten_on_new_requests(): void;
 export declare function redirectRequest(url: string, body: object, id: number): void;
-export declare function askGemini(connection: Connection, psid: number, msg: string): void;
 export declare const helpStr: string;
 export declare const modesArr: string[];
 export declare const modesStr: string;
-export { appServer, net, servers, geminiSettings, connections, updateAvailableServers, userMaxMessageRequestPerMinute, maxUsersPerServer, serverMaxAvailableMassRequests, chatHistoryMessagePreviewMaxLength, sendMaxCount, __settings, mainRuntimeUtils, };
+declare function turnOffSenderFunction(): void;
+declare function turnOnSenderFunction(): void;
+export { appServer, net, servers, geminiSettings, connections, updateAvailableServers, userMaxMessageRequestPerMinute, maxUsersPerServer, serverMaxAvailableMassRequests, chatHistoryMessagePreviewMaxLength, sendMaxCount, __settings, mainRuntimeUtils, turnOnSenderFunction, turnOffSenderFunction };

@@ -23,13 +23,13 @@ import chunkify from "./chunkify";
 import { msToSec, secToMin } from "./convert";
 import { handleMessengerUserMessage } from "./handleUserMessage";
 
-export const VERSION = "1.5.5";
+export const VERSION = "1.6.0";
 export const upStartTime: number = Date.now();
 
 export enum BOT_TYPES {
     Messenger = "Messenger",
     Frontend = "Frontend",
-  }
+}
 
 interface MainRuntileUtils {
     isDevRunning: boolean;
@@ -211,29 +211,6 @@ export function redirectRequest(url: string, body: object, id: number): void {
     });
 }
 
-export function askGemini(connection: Connection, psid: number, msg: string): void {
-    const val = connection.ask(msg);
-    if (typeof val === "boolean") {
-        send({
-            id: psid,
-            msg: "Please be patient, waiting for DigyBot's response...",
-        });
-        return void 0;
-    }
-
-    send({ id: psid, msg: "Gemini is thinking..." });
-
-    val.then((message) => {
-        sendMsgsConsecutively(chunkify(message as string), psid);
-    }).catch((error) => {
-        console.log("error report: ", error);
-        send({
-            id: psid,
-            msg: "Something wrong went wrong when asking DigyBot 😢",
-        });
-    });
-}
-
 export const helpStr: string =
     "To use, type the message you want to ask DigyBot or you could use these commands:\n\n" +
     "!v - get app version\n" +
@@ -265,6 +242,15 @@ app.get("/favicon.ico", (req, res) => {
 
 /* setAiSocketMessageHandler(handleUserMessage); */
 
+
+function turnOffSenderFunction() {
+    __settings.offline = true;
+}
+
+function turnOnSenderFunction() {
+    __settings.offline = false;
+}
+
 async function messengerPostWebhookHandler(req: Request, res: Response) {
     if (process.env.NO_NEW_REQUESTS) return;
     const request: UserRequestBody = req.body;
@@ -283,11 +269,6 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
             const senderId = user?.sender?.id || null;
             const msg = user?.message?.text || null;
 
-            console.log({
-                user,
-                senderId,
-                msg
-            })
             if (
                 !user ||
                 typeof user !== "object" ||
@@ -322,20 +303,22 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
 
             try {
                 const output = await handleMessengerUserMessage(msg, senderId, req.body);
+                
+                /*
                 if(process.env.DEBUG_MODE === "verbose") {
-                    console.dir(output, {depth: null});
+                    console.dir(result, {depth: null});
                 }
+                */
                 
                 if(typeof output === "object" && Array.isArray(output) && output.length >= 1) {
                     for (const msg of output) {
                         await send({id: senderId, msg})
                     }
                 }
-                res.send("EVENT_RECEIVED");
-            
             } catch {
-                res.sendStatus(400);
+                send({id: senderId, msg: "something went wrong😢"});
             }
+            res.send("EVENT_RECEIVED");
         }
     } else {
         console.log("sent status code 401 Unauthorized");
@@ -346,9 +329,9 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
 function messengerVerifyWebhookHandler(req: Request, res: Response) {
     const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN || "@default";
     // Parse the query params
-    const mode: string = req.query["hub.mode"] as string;
-    const token: string = req.query["hub.verify_token"] as string;
-    const challenge: string = req.query["hub.challenge"] as string;
+    const mode = req.query["hub.mode"] as string;
+    const token = req.query["hub.verify_token"] as string;
+    const challenge = req.query["hub.challenge"] as string;
 
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
@@ -393,4 +376,7 @@ export {
     sendMaxCount,
     __settings,
     mainRuntimeUtils,
+    turnOnSenderFunction,
+    turnOffSenderFunction
 };
+

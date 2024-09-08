@@ -16,8 +16,9 @@ import {
     modesArr,
     helpStr,
     chatHistoryMessagePreviewMaxLength,
-    askGemini,
-    BOT_TYPES
+    BOT_TYPES,
+    turnOnSenderFunction,
+    turnOffSenderFunction
 } from "./main";
 import {
  SocketConnectionsReferenceNotYetInitializedError
@@ -30,6 +31,30 @@ type processMessageUtilsObject = {
 }
 
 export let socketConnectionsReference: Connections;
+
+export function askGemini(connection: Connection, psid: number, msg: string): void {
+    const val = connection.ask(msg);
+    console.log(val)
+    if (typeof val === "boolean") {
+        send({
+            id: psid,
+            msg: "Please be patient, waiting for DigyBot's response...",
+        });
+        return void 0;
+    }
+
+    send({ id: psid, msg: "Gemini is thinking..." });
+
+    val.then((message) => {
+        sendMsgsConsecutively(chunkify(message as string), psid);
+    }).catch((error) => {
+        console.log("error report: ", error);
+        send({
+            id: psid,
+            msg: "Something wrong went wrong when asking DigyBot 😢",
+        });
+    });
+}
 
 export async function processMessage(utils: processMessageUtilsObject, connection: Connection) {
     const output: string[] = [];
@@ -44,8 +69,22 @@ export async function processMessage(utils: processMessageUtilsObject, connectio
                 output.push(`app version: ${VERSION}`);
             }
             break;
-
-        case "!logs" /* not yet implemented */:
+        
+        case "!off":
+            {
+                send({ id: utils.senderId, msg: "app can no longer send messages."})
+                turnOffSenderFunction();
+            }
+            break;
+        
+        case "!on":
+            {
+                send({ id: utils.senderId, msg: "app can now send messages."})
+                turnOnSenderFunction();
+            }
+            break;
+        
+        case "!logs": /* not yet implemented */
             {
                 /*
                  * msgArgs[1] - the password
@@ -250,7 +289,7 @@ export async function processMessage(utils: processMessageUtilsObject, connectio
         default:
             {
                 if (connection !== undefined && typeof utils.senderId === "number" && connection.botType === BOT_TYPES.Messenger) {
-                    askGemini(connection, utils.senderId, utils.msg);
+                    askGemini(connection, utils.senderId, utils.msg)
                 }
             }
             break;
@@ -289,10 +328,10 @@ export async function handleSocketFrontendUserMessage(msg: string, socketId: str
     
     /* no support for server changing for frontend yet */
     
-    const obj = await processMessage({msg, senderId: socketId}, connection);
+    const result = await processMessage({msg, senderId: socketId}, connection);
     
-    if(typeof obj === "object")
-        return obj.isCommand === false ? await connection.ask(msg) : obj.output;
+    if(typeof result === "object")
+        return result.isCommand === false ? await connection.ask(msg) : result.output;
 }
 
 export async function handleMessengerUserMessage(msg: string, connectionId: number, body: any) {
@@ -319,8 +358,9 @@ export async function handleMessengerUserMessage(msg: string, connectionId: numb
     const url = connection?.serverUrl;
 
     if (url !== "self") return redirectRequest(url as string, body, connectionId);
+    
+    const result = await processMessage({msg, senderId: connectionId}, connection);
+    if(typeof result === "object")
+        return result.isCommand === false ? await connection.ask(msg) : result.output;
 
-    const obj = await processMessage({msg, senderId: connectionId}, connection);
-    if(typeof obj === "object" && obj.output)
-        return obj.output;
 }

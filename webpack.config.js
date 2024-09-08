@@ -1,4 +1,5 @@
 const TerserPlugin = require("terser-webpack-plugin");
+const nodeExternals = require("webpack-node-externals");
 const webpack = require("webpack");
 const path = require("path");
 
@@ -16,10 +17,12 @@ module.exports = {
   },
   */
   resolve: {
-    modules: ["node_modules", path.resolve(__dirname, "src/node_modules")]
+    modules: ["node_modules", path.resolve(__dirname, "src/node_modules")] //bun cant find node_modules if it is not in src/
     
   },
   
+  externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
+  externals: [nodeExternals()],
   
   //watch: true
   
