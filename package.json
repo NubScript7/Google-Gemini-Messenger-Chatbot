@@ -13,7 +13,7 @@
     "start:preview-dev": "npm run compile || true && npm run start:preview",
     "start:watch-dev": "nodemon -w 'src/*' -e 'ts' --exec 'npm run ci'",
     "start:dev": "nodemon -w 'dist/*' -e 'js' --exec 'npm run start:preview -- --devrun'",
-    "compile": "npx tsc",
+    "compile": "tsc",
     "compile:dev": "nodemon -w 'src/*' -e 'ts' --exec 'npm run compile'",
     "build": "npx webpack",
     "bun:start": "node build/bundle.index.min.mjs",
