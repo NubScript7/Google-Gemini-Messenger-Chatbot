@@ -2,21 +2,15 @@ import { ConnectionsCannotCreateNewConnectionUserAlreadyExistsError } from "./er
 import Connection from "./connectionClass";
 import { send } from "./send";
 
-interface ConnectionList {
-  [id: number | string]: Connection;
-}
+type ConnectionList = Map<number | string, Connection>
 
 class Connections {
-  #connections: ConnectionList;
-  #reuseableConnections: Connection[];
-  #connectionsCache: Set<number | string>;
-  #ongoingSessionCreation: Set<number | string>;
+  _list: ConnectionList;
+  _free: Connection[];
 
   constructor() {
-    this.#connections = {};
-    this.#connectionsCache = new Set();
-    this.#ongoingSessionCreation = new Set();
-    this.#reuseableConnections = [];
+    this._list = new Map();
+    this._free = [];
   }
   
   /**
@@ -24,15 +18,15 @@ class Connections {
    * @public
    */
   getUser(id: number | string) {
-    if (!this.userExists(id))return;
-    return this.#connections[id];
+    if (!this._list.has(id))return;
+    return this._list.get(id)
   }
 
   /**
    * @returns all stored valid users
    */
   getUsers() {
-    return this.#connections;
+    return this._list.values();
   }
   
   /**
@@ -41,43 +35,39 @@ class Connections {
    * @throws if the identifier given already exists
    */
   createConnection(id: number | string) {
-    if (this.userExists(id))
-      throw new ConnectionsCannotCreateNewConnectionUserAlreadyExistsError(
-        "Cannot create a new user connection, user already exists."
-      );
-
-    
-      this.#ongoingSessionCreation.add(id);
-    if(this.#reuseableConnections.length >= 1) {
-      const connection = this.#reuseableConnections.shift();
-        //@ts-ignore
-        this.#connections[id] = connection;
-
-    } else {
-      this.#connections[id] = new Connection(id);
+    if (this._list.get(id)) {
+      throw new ConnectionsCannotCreateNewConnectionUserAlreadyExistsError("Cannot create a new user connection, user already exists.");
     }
-    this.#connections[id].createSession();
-    this.#ongoingSessionCreation.delete(id);
-    this.#connectionsCache.add(id);
-    return this.#connections[id];
+    
+    let connection = this._free.shift();
+    if(!connection) {
+        connection = new Connection(id);
+    } else {
+        connection.id = id
+    }
+    
+    connection.createSession()
+    this._list.set(id, connection)
+    return connection;
   }
   
   /**
    * Fetches if the given id is blocked from making a request
    */
   isBlocked(id: number | string) {
-    if (!this.userExists(id)) return false;
-    return this.#connections[id].isBlocked();
+    const client = this._list.get(id)
+    if (!client)return false;
+    return client.isBlocked();
   }
 
   /**
    * @returns the specified blocked time of the connection associated with the id
    */
   getBlockTimeMS(id: number | string) {
-    if (!this.userExists(id)) return 0;
-    const connection = this.#connections[id];
-    const blockedTime = connection.blockedTime + connection.lastReqTime;
-    console.log(blockedTime);
+    const connection = this._list.get(id);
+    
+    if(!connection)return 0
+    const blockedTime = (connection.blockedTime + connection.lastReqTime) || 0
     
     return blockedTime;
   }
@@ -87,7 +77,7 @@ class Connections {
    * @returns a promise that always returns `true` to signal that all messages has been sent.
    */
   async send(message: string) {
-      for (const psid of this.#connectionsCache) {
+      for (const psid of this._list.keys()) {
         try {
           await send({ id: psid, msg: message });
         } catch {
@@ -101,29 +91,13 @@ class Connections {
    * Destroys the connection of an id referencing to it.
    */
   destroySession(id: number | string): void {
-    if (!this.userExists(id)) return void 0;
-    const connection = this.#connections[id];
+    const connection = this._list.get(id);
+    if (!connection)return;
     connection.destroy();
-    this.#reuseableConnections.push(connection);
-    delete this.#connections[id];
-    this.#connectionsCache.delete(id);
-  }
-
-  /**
-   * Checks if the creation of a connection of an id is still ongoing.
-   */
-  isCreatingSession(psid: number | string) {
-    return this.#ongoingSessionCreation.has(psid);
+    this._free.push(connection);
+    this._list.delete(id);
   }
   
-  /**
-   * Fetches if the given id is a valid connection.
-   */
-  userExists(id: number | string) {
-    if (this.#connectionsCache.has(id))
-      return true;
-    return false;
-  }
 }
 
 export default Connections;

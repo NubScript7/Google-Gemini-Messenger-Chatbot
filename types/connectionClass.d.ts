@@ -7,8 +7,8 @@ import { BOT_TYPES } from "./main";
 declare class Connection {
     #private;
     botType: string;
+    _id: number | string;
     lastReqTime: number;
-    lastActiveTime: number;
     private _isWaiting;
     private _serverUrl;
     private _serverName;
@@ -16,11 +16,13 @@ declare class Connection {
     blockedTime: number;
     IS_CLEARING_CHAT_HISTORY: boolean;
     constructor(id: number | string, botType?: BOT_TYPES | string);
+    set id(id: number | string);
+    get id(): number | string;
+    updateLastReqTime(): void;
     /**
      * @returns a boolean indication the connection has a session initialized.
      */
     hasSession(): boolean;
-    get id(): string | number;
     /**
      * @returns the chat history so far of this connection.
      */
@@ -30,13 +32,12 @@ declare class Connection {
      * @throws if the session is not yet initialized.
      */
     createSession(): void;
-    get isWaiting(): boolean;
     /**
      * Used to ask gemini to generate a response
      * @returns the generated response string
      * @throws if the passed `msg` parameter is invalid or the current connection's session is not yet initialized
      */
-    ask(msg: string): Promise<string | false>;
+    ask(msg: string): Promise<string | undefined>;
     /**
      * Fetches the current chat history so far and get its length.
      * @returns the length of the current chat session so far, if the session is not yet initialized returns null.
@@ -57,7 +58,7 @@ declare class Connection {
     get mode(): string;
     set mode(mode: string);
     /**
-     * Block a connection by a specified number of seconds
+     * Blocks this connection by a specified number of seconds
      */
     block(s: number): void;
     /**

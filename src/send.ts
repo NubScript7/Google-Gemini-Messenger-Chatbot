@@ -31,6 +31,7 @@ type sendApiPayloadObject = {
   msg: string
 }
 
+/*
 function sendApi(payload: sendApiPayloadObject) {
   const req = axios.post(
     __settings.net.output,
@@ -50,18 +51,19 @@ function sendApi(payload: sendApiPayloadObject) {
     }
   );
 }
+*/
 
 function send(payload: MessagePayload) {
   
   if(__settings.offline)
-    return;
+    return Promise.resolve()
   
   if (__settings.totalSentMsgs >= __settings.maxMessages)
     throw new SendFunctionMessageCountExceededError("Message limit exceeded.");
 
   __settings.totalSentMsgs++;
 
-  const req = axios.post(
+  return axios.post(
     __settings.net.output,
     {
       recipient: {
@@ -78,8 +80,6 @@ function send(payload: MessagePayload) {
       },
     }
   );
-
-  return req;
 }
 
 /**

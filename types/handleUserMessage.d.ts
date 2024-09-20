@@ -11,6 +11,6 @@ export declare function processMessage(utils: processMessageUtilsObject, connect
     isCommand: boolean;
 } | undefined>;
 export declare function setupSocketConnectionsObject(connectionsReference: Connections): void;
-export declare function handleSocketFrontendUserMessage(msg: string, socketId: string): Promise<string | false | string[] | undefined>;
-export declare function handleMessengerUserMessage(msg: string, connectionId: number, body: any): Promise<string | false | void | string[]>;
+export declare function handleSocketFrontendUserMessage(msg: string, socketId: string): Promise<string | string[] | undefined>;
+export declare function handleMessengerUserMessage(msg: string, connectionId: number, body: any): Promise<string | void | string[]>;
 export {};

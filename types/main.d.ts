@@ -1,10 +1,9 @@
-/// <reference types="node" />
 import { geminiSettings } from "./gemini";
 import Net from "./netClass";
 import Connections from "./connectionsClass";
 import Servers from "./serversClass";
 import { __settings } from "./send";
-export declare const VERSION = "1.6.0";
+export declare const VERSION = "1.7.0";
 export declare const upStartTime: number;
 export declare enum BOT_TYPES {
     Messenger = "Messenger",

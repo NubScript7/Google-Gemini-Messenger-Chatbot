@@ -6,7 +6,8 @@ import {
   updateAvailableServers,
   __settings,
   mainRuntimeUtils,
-  connections
+  connections,
+  VERSION
 } from "./main";
 
 /*
@@ -32,13 +33,15 @@ const hostname = getInternalHostname();
 
 if (!process.argv.includes("--prod"))
   console.log(
-    "\n\nTo setup testing environment, run these commands on each seperate terminal windows.\n\n  - npm run start:watch-dev\n  - npm run test:server\n"
+    "\n\nTo setup testing environment, run these commands on each seperate terminal windows.\n\n  - npm run dev\n  - npm run test:server\n"
   );
 
 config({ path: path.resolve(__dirname, "../.env") });
 setRoot(path.resolve(__dirname, "../"));
 
-if (process.argv.includes("--devrun")) {
+console.log(`APP VERSION: ${VERSION}`)
+
+if (["--devrun", "-d"].some(e => process.argv.includes(e))) {
   mainRuntimeUtils.isDevRunning = true;
   mainRuntimeUtils.sessionMaxAge = 15;
   mainRuntimeUtils.warningTimeBeforeDeletion = 5;
@@ -49,10 +52,10 @@ if (process.argv.includes("--devrun")) {
 }
 
 if(process.env.DEBUG_MODE === "verbose") {
-  console.log("EVERY WEBHOOK REQUESTS WILL BE LOGGED.")
+  console.log("DEBUG MODE: EVERY WEBHOOK REQUESTS WILL BE LOGGED.")
 }
 
-if(process.argv.includes("--emulate-ai")) {
+if(["--emulate-ai", "-e"].some(e => process.argv.includes(e))) {
   geminiSettings.emulated = true;
   console.log("EMULATING GEMINI'S RESPONSE.");
 }

@@ -23,7 +23,7 @@ import {
 import {
  SocketConnectionsReferenceNotYetInitializedError
 } from "./errors";
-import { reactivateConnection } from "./sessionCleanupWorker";
+import { removeFromWarningList } from "./sessionCleanupWorker";
 
 type processMessageUtilsObject = {
     msg: string,
@@ -306,25 +306,19 @@ export function setupSocketConnectionsObject(connectionsReference: Connections) 
 export async function handleSocketFrontendUserMessage(msg: string, socketId: string) {
     if(!socketConnectionsReference)
         throw new SocketConnectionsReferenceNotYetInitializedError("The connections class of the frontend socket server is not yet initialized")
-    
-    if (socketConnectionsReference.isCreatingSession(socketId))
-        //if user cant wait
-        return ["Please be patient! Already creating a new session..."];
-    
+        
     let connection = socketConnectionsReference.getUser(socketId)
     
     if (connection === undefined) {
         try {
             connection = connections.createConnection(socketId);
-            
         } catch (e) {
             //if somehow we are creating a new session when user session already exists
-            console.log("Error", e);
             return ["Oh no! Something went wrong when requesting for a new session, please try again later😢..."];
         }
     }
 
-    connection.lastActiveTime = Date.now();
+    connection.updateLastReqTime()
     
     /* no support for server changing for frontend yet */
     
@@ -336,10 +330,6 @@ export async function handleSocketFrontendUserMessage(msg: string, socketId: str
 
 export async function handleMessengerUserMessage(msg: string, connectionId: number, body: any) {
     
-    if (connections.isCreatingSession(connectionId))
-        //if user cant wait
-        return ["Please be patient! Already creating a new session..."];
-
     let connection = connections.getUser(connectionId);
 
     if (connection === undefined) {
@@ -352,8 +342,8 @@ export async function handleMessengerUserMessage(msg: string, connectionId: numb
         }
     }
     
-    connection.lastActiveTime = Date.now();
-    reactivateConnection(connection.id);
+    connection.updateLastReqTime()
+    removeFromWarningList(connectionId);
 
     const url = connection?.serverUrl;
 

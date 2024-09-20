@@ -9,11 +9,10 @@ import { GeminiSession } from "./gemini";
    * When no bot type was specified, defaults to `BOT_TYPES.Messenger`
    */
 class Connection {
-  #userId: number | string;
   #reqCount: number; /* implement a request limit */
   botType: string;
+  _id: number | string;
   lastReqTime: number;
-  lastActiveTime: number;
   #isUserUnli: boolean;
   #session: GeminiSession | undefined;
   private _isWaiting: boolean;
@@ -30,11 +29,10 @@ class Connection {
       );
     if (!botType) botType = BOT_TYPES.Messenger;
     this.botType = botType;
-    this.#userId = id;
+    this._id = id;
     this.#reqCount = 0;
     this.#session = new GeminiSession(botType, id);
     this.lastReqTime = Date.now();
-    this.lastActiveTime = this.lastReqTime;
     this._isWaiting = false;
     this.#isUserUnli = false;
     this._serverUrl = "self";
@@ -43,8 +41,17 @@ class Connection {
     this.blockedTime = 0;
     this.IS_CLEARING_CHAT_HISTORY = false;
   }
+  
+  set id(id: number | string) {
+    this.updateLastReqTime()
+    this._id = id
+  }
+  
+  get id() {
+    return this._id
+  }
 
-  #setLastReqTimeNow() {
+  updateLastReqTime() {
     this.lastReqTime = Date.now();
   }
 
@@ -55,20 +62,14 @@ class Connection {
     return this.#session !== undefined;
   }
 
-
-  get id() {
-    this.#setLastReqTimeNow()
-    return this.#userId;
-  }
-
   /**
    * @returns the chat history so far of this connection.
    */
   getHistory() {
-    this.#setLastReqTimeNow()
+    this.updateLastReqTime()
     if(this.#session === undefined)
         return undefined;
-      
+    
     return this.#session.getHistory();
   }
 
@@ -79,12 +80,8 @@ class Connection {
   createSession() {
     if(this.#session === undefined)
        throw new GeminiSessionNotYetInitializedError("Gemini sesssion not yet inilialized.")
-    this.#setLastReqTimeNow()
+    this.updateLastReqTime()
     this.#session.createSession();
-  }
-
-  get isWaiting() {
-    return this._isWaiting;
   }
 
   /**
@@ -93,16 +90,16 @@ class Connection {
    * @throws if the passed `msg` parameter is invalid or the current connection's session is not yet initialized
    */
   async ask(msg: string) {
-    if (this.isWaiting) return false;
+    if (this._isWaiting) return;
     if (!msg || msg == "" || "object" !== typeof this.#session)
       throw new ConnectionNotYetInitializedOrMessageWasEmptyError(
-        "Message was empty or gemini not yet initialized."
+        "Message was empty or gemini is not yet initialized."
       );
 
     this._isWaiting = true;
     try {
       const response = await this.#session.ask(msg);
-      this.#setLastReqTimeNow();
+      this.updateLastReqTime();
       this.#reqCount++;
       this._isWaiting = false;
       return response;
@@ -170,7 +167,7 @@ class Connection {
 
 
   /**
-   * Block a connection by a specified number of seconds
+   * Blocks this connection by a specified number of seconds
    */
   block(s: number) {
     this.lastReqTime = Date.now();
@@ -191,10 +188,10 @@ class Connection {
    * destroys this connection.
    */
   destroy() {
-    this.#userId = -1;
+    this._id = -1;
     this.#reqCount = 0;
     this.#session?.destroySession();
-    this.#session = new GeminiSession(this.botType, this.#userId);
+    this.#session = new GeminiSession(this.botType, this._id);
   }
 
   /**

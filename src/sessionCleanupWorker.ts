@@ -57,8 +57,8 @@ function isBool(bool: any) {
   return typeof bool === "boolean" || bool instanceof Boolean;
 }
 
-export function reactivateConnection(id: string | number) {
-  if (issuedWarningIds.has(id)) issuedWarningIds.delete(id);
+export function removeFromWarningList(id: string | number) {
+  issuedWarningIds.delete(id);
 }
 
 export function destroySessionCleanupWorker() {
@@ -69,14 +69,10 @@ export function destroySessionCleanupWorker() {
 
 function sessionCleanupWorker() {
   const users = config.connections.getUsers();
-  const userIds = Object.keys(users);
 
-  if (userIds.length === 0) return;
-
-  userIds.forEach((id) => {
-    const user = users[id];
-    const sessionAge =
-      user.lastReqTime + Math.floor(secToMs(config.sessionMaxAge));
+  for(const user of users) {
+    const id = user.id
+    const sessionAge = user.lastReqTime + Math.floor(secToMs(config.sessionMaxAge));
     const dateNow = Date.now();
     const isApplicableForWarning = (sessionAge - config.warningTimeBeforeDeletion) <= dateNow
     const isSessionIdle = sessionAge <= dateNow
@@ -85,35 +81,37 @@ function sessionCleanupWorker() {
     if (user.isDestroyed())
         return;
     
-    if(isApplicableForWarning && hasBeenWarned === false) {
-        if(config.notifySession) {
-            switch(user.botType) {
-                case BOT_TYPES.Messenger: {
-                    send({ id, msg: config.notifyMessage })
-                } break;
+        if(isApplicableForWarning && hasBeenWarned === false) {
+            if(config.notifySession) {
+                switch(user.botType) {
+                    case BOT_TYPES.Messenger: {
+                        send({ id, msg: config.notifyMessage })
+                        .catch(e => console.log(e.cause))
+                    } break;
+                }
             }
+            
+            issuedWarningIds.add(id);
+            return;
         }
         
-        issuedWarningIds.add(id);
-        return;
-    }
-    
-    if (isSessionIdle) {
-        
-        if(config.notifySession) {
-          switch(user.botType) {
-            case BOT_TYPES.Messenger: {
-                send({ id, msg: "Connection terminated." })
-            } break;
-          }
+        if (isSessionIdle) {
+            
+            if(config.notifySession) {
+              switch(user.botType) {
+                case BOT_TYPES.Messenger: {
+                    send({ id, msg: "Connection terminated." })
+                    .catch(e => console.log(e.cause))
+                } break;
+              }
+            }
+            
+            issuedWarningIds.delete(id);
+            config.connections.destroySession(id);
         }
-        
-        issuedWarningIds.delete(id);
-        config.connections.destroySession(id);
-    }
     
     
-  });
+  };
 }
 
 export function initializeSessionCleanupWorker(

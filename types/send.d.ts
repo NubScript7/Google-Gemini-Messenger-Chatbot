@@ -14,7 +14,7 @@ interface MessagePayload {
     msg: string;
 }
 declare const __settings: SettingUtils;
-declare function send(payload: MessagePayload): Promise<import("axios").AxiosResponse<any, any>> | undefined;
+declare function send(payload: MessagePayload): Promise<void> | Promise<import("axios").AxiosResponse<any, any>>;
 /**
  * Sends an array of messages to a messenger client
  * @returns `true` to signal that all of the messages has been sent

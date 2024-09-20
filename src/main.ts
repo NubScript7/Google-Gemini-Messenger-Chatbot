@@ -23,7 +23,7 @@ import chunkify from "./chunkify";
 import { msToSec, secToMin } from "./convert";
 import { handleMessengerUserMessage } from "./handleUserMessage";
 
-export const VERSION = "1.6.0";
+export const VERSION = "1.7.0";
 export const upStartTime: number = Date.now();
 
 export enum BOT_TYPES {
@@ -45,7 +45,7 @@ interface MainRuntileUtils {
 
 interface UserMessageEntry {
     sender: {
-        id: number;
+        id: string;
     };
     message: {
         text: string;
@@ -97,7 +97,7 @@ const mainRuntimeUtils = {
 
 
 const corsOptions = {
-  origin: [ "http://localhost:7700" ]
+  origin: [ "http://localhost:7700", "http://localhost:2468" ],
   /*function (origin: any, callback: any) {
     
     const origins = [ "http://localhost:7700" ];
@@ -107,7 +107,7 @@ const corsOptions = {
     callback( error, origins);
     
   }
-  */,
+  */
   method: [ "POST", "GET" ]
 }
 
@@ -258,15 +258,33 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
     if(process.env.DEBUG_MODE === "verbose") {
         console.dir(request, {depth: null});
     }
+    
+    /*
+        object: "page",
+        entry: [
+            {
+                messaging: [
+                    {
+                        sender: {
+                            id: number,
+                        },
+                        message: {
+                            text: string
+                        }
+                    }
+                ]
+            }
+        ]
+    */
 
     if (request.object === "page") {
         const ea: object | null = request.entry || null;
         if ("object" !== typeof ea || !Array.isArray(ea) || (ea?.length || 0) < 1) return res.sendStatus(400);
-        for (const entry of req.body.entry) {
+        for (const entry of ea) {
             if ("object" !== typeof entry.messaging || !Array.isArray(entry.messaging) || entry.messaging.length !== 1) return res.sendStatus(400);
 
             const [user]: [UserMessageEntry] = entry.messaging || [];
-            const senderId = user?.sender?.id || null;
+            const senderId = parseInt(user?.sender?.id) || null;
             const msg = user?.message?.text || null;
 
             if (
@@ -275,11 +293,11 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
                 Array.isArray(user) ||
                 
                 !senderId ||
-                isNaN(senderId) ||
-                typeof senderId !== "string" ||
+                typeof senderId !== "number" ||
+                Number.isNaN(senderId) ||
                 
                 !msg ||
-                "string" !== typeof msg ||
+                typeof msg !== "string" ||
                 msg.length === 0
             )
                 return res.sendStatus(400);
@@ -316,7 +334,9 @@ async function messengerPostWebhookHandler(req: Request, res: Response) {
                     }
                 }
             } catch {
-                send({id: senderId, msg: "something went wrong😢"});
+
+                send({id: senderId, msg: "Something went wrong, please try again😢"})
+                .catch(e => console.log(e.response.data))
             }
             res.send("EVENT_RECEIVED");
         }
@@ -357,7 +377,7 @@ app.get("/webhook", messengerVerifyWebhookHandler);
 
 
 app.all("*", (req, res) => {
-    res.status(404).send(":)");
+    res.status(404).send(":)")
 });
 
 

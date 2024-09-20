@@ -31,7 +31,7 @@ export interface sessionCleaupWorkerConfig {
      */
     connections: Connections;
 }
-export declare function reactivateConnection(id: string | number): void;
+export declare function removeFromWarningList(id: string | number): void;
 export declare function destroySessionCleanupWorker(): void;
 export declare function initializeSessionCleanupWorker(workerConfig: sessionCleaupWorkerConfig): void;
 export default initializeSessionCleanupWorker;

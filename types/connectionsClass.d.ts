@@ -1,9 +1,8 @@
 import Connection from "./connectionClass";
-interface ConnectionList {
-    [id: number | string]: Connection;
-}
+type ConnectionList = Map<number | string, Connection>;
 declare class Connections {
-    #private;
+    _list: ConnectionList;
+    _free: Connection[];
     constructor();
     /**
      * @returns the connection object of an id if there is a connection found associated with id, otherwise undefined.
@@ -13,7 +12,7 @@ declare class Connections {
     /**
      * @returns all stored valid users
      */
-    getUsers(): ConnectionList;
+    getUsers(): IterableIterator<Connection>;
     /**
      * Creates a new `Connection` instance.
      * @returns a connection object.
@@ -37,13 +36,5 @@ declare class Connections {
      * Destroys the connection of an id referencing to it.
      */
     destroySession(id: number | string): void;
-    /**
-     * Checks if the creation of a connection of an id is still ongoing.
-     */
-    isCreatingSession(psid: number | string): boolean;
-    /**
-     * Fetches if the given id is a valid connection.
-     */
-    userExists(id: number | string): boolean;
 }
 export default Connections;
