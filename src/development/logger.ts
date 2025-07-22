@@ -1,4 +1,5 @@
-import getNetworkAddress from "./network";
+import { AxiosError } from "axios";
+import getNetworkAddress from "../network";
 import { Request, Response, NextFunction } from "express";
 
 function wrapStatusCodeColor(code: number) {
@@ -48,7 +49,7 @@ function loggerResponse(
   );
 }
 
-function logger(req: Request, res: Response, next: NextFunction) {
+export function logger(req: Request, res: Response, next: NextFunction) {
   const date: Date = new Date();
   const startTime: number = Date.now();
   const ip: string = getNetworkAddress() || "localhost";
@@ -57,4 +58,21 @@ function logger(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export default logger;
+export function logAxiosError(error: AxiosError) {
+  if(error.response) {
+    console.log("Axios response error:", {
+      status: error.response.status,
+      statusText: error.response.statusText,
+      data: error.response.data,
+      headers: error.response.headers
+    })
+  } else if(error.request) {
+      console.log("Axios request error:", {
+        request: error.request
+      })
+    } else {
+      console.log('Axios error:', {
+        message: error.message ?? error
+      })
+    }
+}

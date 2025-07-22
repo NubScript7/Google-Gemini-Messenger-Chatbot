@@ -1,24 +1,26 @@
 import { SendFunctionMessageCountExceededError } from "./errors";
 import axios, { AxiosError } from "axios";
-import Connections from "./connectionsClass";
-import Net from "./netClass";
+import { Runtime } from "./runtime";
+import { logAxiosError } from "./development/logger";
 
 interface SettingUtils {
-  accessToken: string;
   totalSentMsgs: number;
   maxMessages: number;
-  net: Net;
-  connections: Connections;
   timeout: number;
   offline: boolean;
+}
+
+const sendSettings: SettingUtils = {
+  totalSentMsgs: 0,
+  maxMessages: Runtime.settings.sendMaxCount,
+  timeout: 10_000,
+  offline: false
 }
 
 interface MessagePayload {
   id: number | string,
   msg: string
 }
-
-const __settings = {} as SettingUtils;
 
 /**
  * Sends a message to the messenger client
@@ -53,18 +55,20 @@ function sendApi(payload: sendApiPayloadObject) {
 }
 */
 
+
 function send(payload: MessagePayload) {
   
-  if(__settings.offline)
+  if(sendSettings.offline)
     return Promise.resolve()
   
-  if (__settings.totalSentMsgs >= __settings.maxMessages)
+  if (sendSettings.totalSentMsgs >= sendSettings.maxMessages)
     throw new SendFunctionMessageCountExceededError("Message limit exceeded.");
 
-  __settings.totalSentMsgs++;
+  sendSettings.totalSentMsgs++;
+
 
   return axios.post(
-    __settings.net.output,
+    Runtime.outputServer,
     {
       recipient: {
         id: payload.id
@@ -74,7 +78,7 @@ function send(payload: MessagePayload) {
       },
     },
     {
-      timeout: __settings.timeout,
+      timeout: sendSettings.timeout,
       params: {
         access_token: process.env.FB_PAGE_ACCESS_TOKEN,
       },
@@ -91,13 +95,12 @@ async function sendMsgsConsecutively(arr: string[], psid: number) {
       try {
         await send({ id: psid, msg });
       } catch (e: any) {
-        console.log("error report:", e?.response?.data || e, "code:", e?.code); //axios error or other error
-        send({ id: psid, msg: "Failed to send this message 😢" })?.catch((e) =>
-          console.log("error report:", e?.response?.data || e, "code:", e?.code)
-        );
+        logAxiosError(e)
+        send({ id: psid, msg: "Failed to send this message 😢"})
+        .catch(e => logAxiosError(e))
       }
     }
     return true;
 }
 
-export { send, sendMsgsConsecutively, __settings };
+export { send, sendMsgsConsecutively };

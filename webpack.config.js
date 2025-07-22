@@ -16,10 +16,6 @@ module.exports = {
     errorDetails: true
   },
   */
-  resolve: {
-    modules: ["node_modules", path.resolve(__dirname, "src/node_modules")] //bun cant find node_modules if it is not in src/
-    
-  },
   
   externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
   externals: [nodeExternals()],
@@ -27,24 +23,24 @@ module.exports = {
   //watch: true
   
   // optional: bundle everything into 1 file
-  plugins: [
+  /* plugins: [
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1
     })
-  ],
-  /*
+  ], */
+  
   optimization: {
     minimize: true, // Enable minification
     
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          mangle: false
+          mangle: false,
+          compress: true,
+          
         },
       }),
     ],
     
   },
-  */
-  
 };

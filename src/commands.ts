@@ -1,8 +1,9 @@
 import chunkify from "./chunkify";
-import { LOGS, connections, mainRuntimeUtils, no_new_requests, relisten_on_new_requests, servers } from "./main";
+import { VERSION } from "./constants";
+import { connections } from "./webhooks/geminiWebhook";
+import { LOGS, Runtime } from "./runtime";
 
 export const PREFIX = "!";
-let VERSION: string = "";
 
 export type CommandStructure = {
     [commandName: string]: {
@@ -18,6 +19,13 @@ export const COMMANDS: CommandStructure = {
     logs: {
         default: ["Password required."],
         run: (output: string[], id: number | string, password: string, logIndex: string) => {
+            if(process.env.LOGS_PASSWORD !== password) {
+                const connection = connections.getUser(id);
+
+                if (connection === undefined) return;
+                connection.block(Runtime.blockedTimeSeconds)
+            }
+
             if (process.env.LOGS_PASSWORD === password && !logIndex) {
                 for (const LOG of LOGS) {
                     output.push(...chunkify(LOG));
@@ -32,14 +40,22 @@ export const COMMANDS: CommandStructure = {
         },
     },
     on: {
-        default: () => {
-            relisten_on_new_requests();
+        default: (output: string[], id: number | string) => {
+            const conn = connections.getUser(id)
+
+            if(conn) {
+                conn.isMuted = true
+            }
             return ["bot online."];
         },
     },
     off: {
-        default: () => {
-            no_new_requests();
+        default: (output: string[], id: number | string) => {
+            const conn = connections.getUser(id)
+
+            if(conn) {
+                conn.isMuted = true
+            }
             return ["bot offline."];
         },
     },
@@ -54,13 +70,14 @@ export const COMMANDS: CommandStructure = {
                 connection.bypassUserLimitedGenerationCount();
                 output.push("You can now ask unlimited times.");
             } else {
-                output.push("Wrong password! Cooldown for 5 minutes...");
-                connection.block(mainRuntimeUtils.blockedTimeSeconds);
+                output.push(`Wrong password! Cooldown for ${Runtime.blockedTimeSeconds} seconds...`);
+                connection.block(Runtime.blockedTimeSeconds);
             }
         },
     },
     "ch-server": {
-        default: [servers?.strCache, "Type '!ch-server' then name of the server you want to change to:"],
+        default: ["server changing is disabled right now!"]
+        /* default: [servers?.strCache, "Type '!ch-server' then name of the server you want to change to:"],
         run: (output: string[], id: string | number, server: string) => {
             if (!servers.names.includes(server)) return output.push("Server does not exists in selectable servers.");
             
@@ -73,13 +90,16 @@ export const COMMANDS: CommandStructure = {
             connection.serverName = server;
             connection.serverUrl = serverUrl;
             output.push("Successfully set selected server.");
-        },
+        }, */
     },
+
+    
+    
+    _default: {
+        default: ["That is an invalid command."]
+    }
 };
 
-export function passAppVersion(version: string) {
-    VERSION = version;
-}
 
 export function handleCommand(message: string, id: number | string): [string[], boolean] {
     const output: string[] = [];
@@ -90,7 +110,8 @@ export function handleCommand(message: string, id: number | string): [string[], 
     if (typeof messageArgs !== "object" && !Array.isArray(messageArgs)) return [output, isCommand];
 
     const [commandName, ...args] = messageArgs;
-    const command = isCommand ? COMMANDS[commandName] : void 0;
+    const command = COMMANDS[commandName] ?? COMMANDS._default;
+
 
     if (command === undefined) return [output, isCommand];
 
@@ -103,7 +124,6 @@ export function handleCommand(message: string, id: number | string): [string[], 
     } else if (typeof command?.run === "function") {
         command.run(output, id, ...args);
     }
-    console.log(output);
     
 
     return [output, isCommand];

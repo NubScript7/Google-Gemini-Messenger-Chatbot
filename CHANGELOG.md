@@ -89,3 +89,10 @@
 
 ## fixed
 - fixed some minor bugs for the frontend
+
+## Version 1.6.0
+
+- removed bun support for simplicity
+- refactor the codebase
+- migrated from `@google/generative-ai` to `@google/genai`
+- supporting messenger webhooks for now (no socket.io)

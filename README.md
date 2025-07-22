@@ -23,12 +23,12 @@
 
 > :warning: **Attention** :warning:
 >
-> - When i mention `vendor(s)` i refer to companies, groups, individuals, etc. that offers ai software.
+> - When i mention `vendor(s)` i refer to companies, groups, individuals, etc. that offers ai software/service.
 
 #### Why Gemini? Why not ChatGPT or other vendors?
 
 - I use Google Gemini because it is great for small projects, it offers free chat generation as long you are below the free tier barrier
-- You can use your preferred
+- You can use whatever you preferred
 
 #### Can i use my preferred AI vendor?
 
@@ -70,8 +70,7 @@ git clone https://github.com/NubScript7/Google-Gemini-Messenger-Chatbot
 
 > **Attention!**
 >
-> - If you have not already, install [nodejs](https://nodejs.com)
-> - you can also use [deno](https://deno.com) or [bun](https://oven.sh)
+> If you have not already, install [nodejs](https://nodejs.com)
 
 - After that, install the required dependencies of this project.
 
@@ -112,8 +111,6 @@ pnpm install
   GOOGLE_GEMINI_API_KEY=<YOUR_GOOGLE_AI_API_KEY_HERE>
 ```
 
-> - I will make a step-by-step tutorial on how to do this when i have free time
-
 - To start the last bundled app, from the CLI run:
 
 ```bash
@@ -144,10 +141,4 @@ npm run build
 
 ```bash
 npm run production
-```
-
-- or if you use `bun` you can run:
-
-```bash
-bun bunBundler.js
 ```
