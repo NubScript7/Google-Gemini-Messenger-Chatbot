@@ -1,3 +1,7 @@
+import { config } from "dotenv";
+
+config()
+
 interface MainRuntimeUtils {
     isDevRunning: boolean;
     apiUrl: string;
@@ -27,10 +31,10 @@ class MainRuntime implements MainRuntimeUtils {
     sessionMaxAge = 300; //seconds = 5 minutes
     notifySession = true;
     notifyMessage =
-        "Your connection will become inactive after 30 seconds, please type '!abort', type some commands or ask DigyBot something just to make an activity to cancel connection termination.";
+        `Your connection will become inactive after 30 seconds, please type '!abort' to cancel connection termination.`;
     workerInterval = 60; //seconds = 1 minute
     warningTimeBeforeDeletion = 30; //seconds
-    outputServer = process.env.localTestServer ? process.env.localTestServer : "http://localhost:2468/message"
+    outputServer = process.env.localTestServer ? process.env.localTestServer : `https://graph.facebook.com/v23.0/${process.env.FB_PAGE_ID}/messages`
 
     settings = {
         UMMRPM: 5,

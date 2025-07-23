@@ -18,7 +18,7 @@ import {
     GeminiSessionAlreadyInitializedError,
 } from "./errors";
 
-import { BOT_TYPES } from "./constants";
+import { BOT_NAME, BOT_TYPES } from "./constants";
 
 const generationConfig: {
     temperature: number;
@@ -184,7 +184,7 @@ class GeminiSettings {
                 systemInstruction:
                     "string" === typeof options?.instruction
                         ? options.instruction
-                        : "your name is 'DigyBot', dont answer in markdown format.",
+                        : `your name is '${BOT_NAME}', dont answer in markdown format.`,
             },
             history: [],
         });

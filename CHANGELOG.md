@@ -96,3 +96,7 @@
 - refactor the codebase
 - migrated from `@google/generative-ai` to `@google/genai`
 - supporting messenger webhooks for now (no socket.io)
+
+## Version 1.6.1
+- fixed some configuration bugs
+- default name is now "GenBot"

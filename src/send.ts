@@ -66,7 +66,6 @@ function send(payload: MessagePayload) {
 
   sendSettings.totalSentMsgs++;
 
-
   return axios.post(
     Runtime.outputServer,
     {

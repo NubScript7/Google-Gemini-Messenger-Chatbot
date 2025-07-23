@@ -43,12 +43,15 @@ const requiredEnvironmentVariables = [
 
     /* YOUR FB PAGE ACCESS TOKEN */
     "FB_PAGE_ACCESS_TOKEN",
+
+    /* YOUR FB PAGE ID */
+    "FB_PAGE_ID",
+
+    /* your fb page verify token */
+    "FB_PAGE_VERIFY_TOKEN",
 ];
 
 const optionalEnvironmentVariables = [
-    /* your fb page verify token */
-    "FB_PAGE_VERIFY_TOKEN",
-
     /* your database webhook for getting data */
     "DB_API_URL_FETCH",
 

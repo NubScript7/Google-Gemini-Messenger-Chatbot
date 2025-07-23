@@ -1,6 +1,7 @@
 import { hostname } from "node:os";
 
 export const VERSION = "1.6.0";
+export const BOT_NAME = "GenBot";
 
 export enum BOT_TYPES {
     Messenger = "Messenger",

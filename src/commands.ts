@@ -1,5 +1,5 @@
 import chunkify from "./chunkify";
-import { VERSION } from "./constants";
+import { BOT_NAME, VERSION } from "./constants";
 import { connections } from "./webhooks/geminiWebhook";
 import { LOGS, Runtime } from "./runtime";
 
@@ -93,7 +93,24 @@ export const COMMANDS: CommandStructure = {
         }, */
     },
 
-    
+    help: {
+        default: [
+            `To use, type the message you want to ask ${BOT_NAME} or you could use these commands:\n\n` +
+            "!v - get app version\n" +
+            "!help - used to print this help message\n" +
+            "!ch-server - change the server to ask DigyBot (type '!ch-server' to change current server)\n" +
+            "!server - to get the server you are currently on\n" +
+            "!modes - used to know about the output modes\n" +
+            "!mode - used to get what output mode you are using\n" +
+            "!ch-mode - change the output mode (type '!modes' to know about the modes)\n" +
+            "!clear - used to clear the chat history from the app\n" +
+            "!history - used to print your chat history\n"
+        ]
+    },
+
+    abort: {
+        default: ["Connection termination aborted."],
+    },
     
     _default: {
         default: ["That is an invalid command."]
@@ -112,8 +129,9 @@ export function handleCommand(message: string, id: number | string): [string[], 
     const [commandName, ...args] = messageArgs;
     const command = COMMANDS[commandName] ?? COMMANDS._default;
 
-
-    if (command === undefined) return [output, isCommand];
+    if(!isCommand || command === undefined) {
+        return [output, isCommand];
+    }
 
     if (messageArgs.length === 1) {
         if (typeof command.default === "function") {
