@@ -100,3 +100,14 @@
 ## Version 1.6.1
 - fixed some configuration bugs
 - default name is now "GenBot"
+
+# Version 2.0.0
+
+COMPLETELY refactored the codebase from SCRATCH
+
+- now switched to Tsup for faster development
+- also now uses Hono instead of Express
+- now checks incoming message webhooks using `zod`
+- made `gemini` into `Generation`, which is a more friendly name and easier to swap out Gemini with other chatbots
+- gemini model is now overridable, incase you want to change models without modifying code
+- also now introducing chat history saving! When connection deactivate, your chat history will now be saved and has an option to clear history. (NOT YET IMPEMENTED)
