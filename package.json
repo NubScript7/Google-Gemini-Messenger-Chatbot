@@ -14,6 +14,7 @@
     "@types/dotenv-parse-variables": "^2.0.3",
     "@types/node": "^25.0.10",
     "esbuild": "^0.27.2",
+    "pre-commit": "^1.0.10",
     "typescript": "~5.8.3"
   },
   "dependencies": {
