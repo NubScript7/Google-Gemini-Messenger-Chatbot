@@ -12,6 +12,9 @@ type EnvironmentVariables = {
     ENABLE_DEBUG_API: boolean
 }
 
-export const loaded = config();
+config()
+
+export const loaded = { ...process.env };
 
 export const env = dotenvParser(loaded.parsed!) as EnvironmentVariables;
+
