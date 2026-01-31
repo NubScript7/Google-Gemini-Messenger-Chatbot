@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator"
-import { userRequestBodySchema } from "../../schema/validator/facebook";
-import { ConnectionManager } from "../../core/chatbot/connectionManager";
-import { SendableMessage, Sender } from "../../core/sender";
-import { handleCommand } from "../../core/command";
-import { StateManager } from "../../core/stateManager";
-import chunkify from "../../utils/chunkify";
+import { userRequestBodySchema } from "../../../schema/validator/facebook";
+import { ConnectionManager } from "../../../core/chatbot/connectionManager";
+import { SendableMessage, Sender } from "../../../core/sender";
+import { handleCommand } from "../../../core/command";
+import { StateManager } from "../../../core/stateManager";
+import chunkify from "../../../utils/chunkify";
 
-export const fb = new Hono();
+
+export const newMessage = new Hono();
 
 export interface UserMessageEntry {
     sender: {
@@ -32,7 +33,7 @@ const sender = Sender.getInstance()
 
 const GEMINI_THINKING_MESSAGE = `${StateManager.BOT_NAME} is thinking...`
 
-fb.post("/post_message", zValidator("json", userRequestBodySchema), async (c) => {
+newMessage.post("/", zValidator("json", userRequestBodySchema), async (c) => {
     const body: UserRequestBody = await c.req.json();
 
     if (body.object !== "page") return c.text("Not Found", 404);
@@ -69,8 +70,8 @@ async function postMessageHandler(body: UserRequestBody) {
         }
     }
 }
- 
-fb.get("/webhook", (c) => {
+
+newMessage.get("/", (c) => {
 
     const { req } = c;
     const verifyToken = process.env.FB_PAGE_VERIFY_TOKEN;
