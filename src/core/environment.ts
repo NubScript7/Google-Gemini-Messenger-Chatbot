@@ -12,9 +12,14 @@ type EnvironmentVariables = {
     ENABLE_DEBUG_API: boolean
 }
 
-config()
+const loaded = config()
 
-export const loaded = { ...process.env };
+const filtered = Object.entries({
+    ...process.env,
+    ...loaded.parsed,
+})
+.filter(([, value]) => value !== undefined)
 
-export const env = dotenvParser(loaded.parsed!) as EnvironmentVariables;
+const temp = Object.fromEntries(filtered) as Record<string, string>
 
+export const env = dotenvParser(temp) as EnvironmentVariables;

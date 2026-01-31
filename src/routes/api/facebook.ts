@@ -37,6 +37,12 @@ fb.post("/post_message", zValidator("json", userRequestBodySchema), async (c) =>
 
     if (body.object !== "page") return c.text("Not Found", 404);
 
+    postMessageHandler(body)
+
+    return c.text("EVENT_RECEIVED", 200);
+})
+
+async function postMessageHandler(body: UserRequestBody) {
     for (const entry of body.entry) {
         for (const messageEvent of entry.messaging) {
             
@@ -62,10 +68,8 @@ fb.post("/post_message", zValidator("json", userRequestBodySchema), async (c) =>
 
         }
     }
-
-    return c.text("EVENT_RECEIVED", 200);
-})
-
+}
+ 
 fb.get("/webhook", (c) => {
 
     const { req } = c;
