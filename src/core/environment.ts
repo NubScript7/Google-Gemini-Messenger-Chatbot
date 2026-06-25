@@ -9,7 +9,9 @@ type EnvironmentVariables = {
     VERSION: string,
     OVERRIDE_MODEL: string,
     FB_GRAPH_API_URL: string,
-    ENABLE_DEBUG_API: boolean
+    ENABLE_DEBUG_API: boolean,
+    DEBUG_CHAT_GENERATION: boolean,
+    DEBUG_CHAT_GENERATION_MESSAGE: string
 }
 
 const loaded = config()

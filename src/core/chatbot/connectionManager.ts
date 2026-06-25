@@ -2,42 +2,20 @@ import { Connection, type PSID } from "./client";
 import { Generation } from "./generation";
 import { HistoryManager } from "./history";
 
+const PRESERVE_ONLY_CURATED_HISTORY = true
 
-export class ConnectionManager {
-    private static instance: ConnectionManager
-    clientManager = ClientManager.getInstance()
-
-    static getInstance() {
-        if (!ConnectionManager.instance) {
-            ConnectionManager.instance = new ConnectionManager()
-        }
-
-        return ConnectionManager.instance
-    }
-
-    getConnection(id: PSID) {
-        return this.clientManager.getClient(id)
-    }
-
-    deactivate(id: PSID) {
-        return this.clientManager.deactivate(id)
-    }
-}
-
-
-
-export class GenerationManager {
-    private static instance: GenerationManager
+export class GenerationFactory {
+    private static instance: GenerationFactory
 
     generations = new Map<PSID, Generation>()
     free: Generation[] = []
 
     static getInstance() {
-        if (!GenerationManager.instance) {
-            GenerationManager.instance = new GenerationManager()
+        if (!GenerationFactory.instance) {
+            GenerationFactory.instance = new GenerationFactory()
         }
 
-        return GenerationManager.instance
+        return GenerationFactory.instance
     }
 
     getGeneration(id: PSID) {
@@ -58,7 +36,7 @@ export class GenerationManager {
         if (this.free.length >= 1) {
             free = this.free.pop()!
         } else {
-            const history = HistoryManager.getInstance().getHistory(id)
+            const history = HistoryManager.getInstance().collection.get(id)?.history || []
             free = new Generation(history)
         }
 
@@ -68,18 +46,18 @@ export class GenerationManager {
 
 
 
-export class ClientManager {
-    private static instance: ClientManager
+export class ClientFactory {
+    private static instance: ClientFactory
 
     clients = new Map<PSID, Connection>()
     free: Connection[] = []
 
     static getInstance() {
-        if (!ClientManager.instance) {
-            ClientManager.instance = new ClientManager()
+        if (!ClientFactory.instance) {
+            ClientFactory.instance = new ClientFactory()
         }
 
-        return ClientManager.instance
+        return ClientFactory.instance
     }
 
     getClient(id: PSID) {
@@ -88,7 +66,7 @@ export class ClientManager {
         if (this.clients.has(id)) {
             client = this.clients.get(id)!
         } else {
-            const generation = GenerationManager.getInstance().getGeneration(id)
+            const generation = GenerationFactory.getInstance().getGeneration(id)
             client = new Connection(id, generation)
         }
 
@@ -101,18 +79,25 @@ export class ClientManager {
         if (this.free.length >= 1) {
             free = this.free.pop()!
         } else {
-            const generation = GenerationManager.getInstance().request(id)
+            const generation = GenerationFactory.getInstance().request(id)
             free = new Connection(id, generation)
         }
 
         return free
     }
 
+    private preserveHistory(con: Connection) {
+        const history = con.linkedGeneration.chat.getHistory(PRESERVE_ONLY_CURATED_HISTORY)
+        HistoryManager.getInstance().saveHistory(con.psid, history)
+    }
+
     deactivate(id: PSID) {
         if(this.clients.has(id)) {
             const connection = this.clients.get(id)!
+            this.preserveHistory(connection)
+
             connection.deactivate()
-            connection.linkedGeneration.deactivate()
+            connection.linkedGeneration.setIsActive(false)
 
             this.clients.delete(id)
             this.free.push(connection)
@@ -123,4 +108,3 @@ export class ClientManager {
         return false
     }
 }
-

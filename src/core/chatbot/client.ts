@@ -12,15 +12,32 @@ export class Connection {
     active = true
     linkedGeneration: Generation
 
+    timeCreated: number
+    lastActive: number
+
+    
     constructor(id: PSID, generation: Generation) {
         this.psid = id
-        
         this.linkedGeneration = generation
+        
+        const time = Date.now()
+        this.timeCreated = time
+        this.lastActive = time
+    }
+
+    updateTime() {
+        this.lastActive = Date.now()
     }
 
     deactivate() {
+        if (!this.active) return;
+
         this.active = false
         this.psid = BLANK_PSID
+
+        const time = Date.now()
+        this.timeCreated = time
+        this.lastActive = time
     }
 
     reactivate(id: PSID) {
@@ -28,6 +45,10 @@ export class Connection {
 
         this.active = true
         this.psid = id
+
+        const time = Date.now()
+        this.timeCreated = time
+        this.lastActive = time
     }
 }
 

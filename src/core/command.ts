@@ -1,9 +1,10 @@
 import type { PSID } from "./chatbot/client";
-import { ConnectionManager } from "./chatbot/connectionManager";
+import { ClientFactory } from "./chatbot/connectionManager";
 import { HistoryManager } from "./chatbot/history";
 import { StateManager } from "./stateManager";
 
 export const PREFIX = "!";
+const historyManager = HistoryManager.getInstance()
 
 export type CommandStructure = {
     [commandName: string]: {
@@ -87,7 +88,7 @@ export const COMMANDS: CommandStructure = {
 
     clear: {
         default(id: PSID) {
-            const client = ConnectionManager.getInstance().getConnection(id)
+            const client = ClientFactory.getInstance().getClient(id)
 
             client.linkedGeneration.reset(HistoryManager.EMPTY)
             return ["Chat history cleared."];
@@ -95,13 +96,16 @@ export const COMMANDS: CommandStructure = {
     },
 
     history: {
-        default: ["Currently disabled."]
-        // default(id: PSID) {
-        //     const client = ConnectionManager.getInstance().getConnection(id)
-        //     const history = client.linkedGeneration.chat.getHistory()
+        default(id: PSID) {
+            const client = ClientFactory.getInstance().getClient(id)
+            const history = historyManager.collection.get(id)
+            if (history) {
+                history.updateHistory(client.linkedGeneration.chat.getHistory())
+                return history.getHistoryPreview()
+            }
 
-        //     return []
-        // }
+            return ["Nothing to show..."]
+        }
     },
 
     abort: {

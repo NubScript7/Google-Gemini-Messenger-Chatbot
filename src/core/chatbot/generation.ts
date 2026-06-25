@@ -12,10 +12,19 @@ if (!GOOGLE_GEMINI_API_KEY) {
 
 
 export class GenerationManager {
+    private static instance: GenerationManager
     private genAI: GoogleGenAI
 
     constructor() {
         this.genAI = new GoogleGenAI({ apiKey: GOOGLE_GEMINI_API_KEY })
+    }
+
+    static getInstance() {
+        if (!GenerationManager.instance) {
+            GenerationManager.instance = new GenerationManager()
+        }
+        
+        return GenerationManager.instance
     }
 
     createChat(history: Content[] = []) {
@@ -36,49 +45,32 @@ export class GenerationManager {
 }
 
 
-
-export const generationManager = new GenerationManager()
-
+export const generationManager = GenerationManager.getInstance()
 
 
 export class Generation {
-    active = true
-    timeCreated: number
-    lastActive: number
+    private _active = true
     chat: Chat
 
-    constructor(history: Content[]) {
-        const time = Date.now()
-        this.timeCreated = time
-        this.lastActive = time
+    get isActive() {
+        return this._active
+    }
 
+    setIsActive(val: boolean) {
+        this._active = val
+    }
+
+    constructor(history: Content[]) {
         this.chat = generationManager.createChat(history)
     }
 
     reset(history: Content[]) {
-        this.active = true
-        
-        const time = Date.now()
-        this.timeCreated = time
-        this.lastActive = time
+        this._active = true
         this.chat = generationManager.createChat(history)
     }
 
-    private updateTime() {
-        this.lastActive = Date.now()
-    }
-
     async generateContent(message: string) {
-        this.updateTime()
         const response = await this.chat.sendMessage({ message })
         return response.text
-    }
-
-    deactivate() {
-        this.active = false
-        
-        const time = Date.now()
-        this.timeCreated = time
-        this.lastActive = time
     }
 }

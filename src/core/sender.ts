@@ -44,8 +44,12 @@ export class Sender {
             queue.push(payload)
         }
 
-        for (const item of queue) {
-            await this.postMessage(item)
+        try {
+            for (const item of queue) {
+                await this.postMessage(item)
+            }
+        } catch(e) {
+            console.log(typeof e)
         }
     }
 }
