@@ -1,4 +1,4 @@
 allowBuilds:
-  esbuild: set this to true or false
-  pre-commit: set this to true or false
-  protobufjs: set this to true or false
+  esbuild: true
+  pre-commit: true
+  protobufjs: true

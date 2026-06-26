@@ -4,17 +4,17 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/application/index.ts",
     "build": "npx tsup",
     "start": "node dist/index.js"
   },
   "devDependencies": {
-    "@hono/zod-validator": "^0.7.6",
     "@types/axios": "^0.9.36",
     "@types/node": "^25.0.10",
     "typescript": "~5.8.3"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.6",
     "@google/genai": "^1.38.0",
     "@hono/node-server": "^1.19.9",
     "axios": "^1.13.3",
