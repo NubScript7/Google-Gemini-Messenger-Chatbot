@@ -4,7 +4,7 @@
 <div align="center">
 <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 <a href="#"><img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2FNubScript7%2FGoogle-Gemini-Messenger-Chatbot&countColor=%23f47373"></a>
-<a href="#"><img src="https://img.shields.io/badge/release-v.1.5.5-blue"></a>
+<a href="#"><img src="https://img.shields.io/badge/release-v.2.0.0-blue"></a>
 </div>
 
 ## Work in progress :construction: :construction_worker:
@@ -15,9 +15,6 @@
 
 - You can use command by typing an exclamation mark `!` before you message
 - You can ask Gemini by just typing your message
-
-> **Attention**
-> if you have typed a command but the command does not exists, it will by default ask Gemini
 
 ## :crown: Q & A
 
@@ -46,15 +43,15 @@
 #### The available command are:
 
 - !help - prints the instruction of how to use the app, also tells the list of commands
-- !v - get app version\n
+- !v - get app version
 - !help - used to print this help message
-- !ch-server - change the server to ask DigyBot (type '!ch-server' to change current server)
-- !server - to get the server you are currently on
-- !modes - used to know about the output modes
-- !mode - used to get what output mode you are using
-- !ch-mode - change the output mode (type '!modes' to know about the modes)
+- !ch-server - change the server to ask DigyBot (type '!ch-server' to change current server) - disabled
+- !server - to get the server you are currently on - unimplemented
+- !modes - used to know about the output modes - unimplemented
+- !mode - used to get what output mode you are using - unimplemented
+- !ch-mode - change the output mode (type '!modes' to know about the modes) - unimplemented
 - !clear - used to clear the chat history from the app
-- !history - used to print your chat history
+- !history - used to print your chat history - disabled
 
 > You can add or remove commands based on what you need!
 

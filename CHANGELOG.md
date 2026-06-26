@@ -1,102 +1,136 @@
-# Version 1.0.0
+# THE CHANGELOG
 
-## using nodejs as starting point
+## Version 1.0.0
+
+### using nodejs as starting point
 
 - vanilla javascript and cjs
 
-# Version 1.2.0
+## Version 1.2.0
 
-## using eslint
+### using eslint
 
 - using eslint to catch compile time errors
 
-## added
+### added
 
 - added more commands
 
-# Version 1.3.0
+## Version 1.3.0
 
-## added
+### added
 
 - added `Gemini Session`
 
-## changed
+### changed
 
 - instead of one session for all clients, each client will now have its own `Gemini Session`
 
-# Version 1.3.1
+## Version 1.3.1
 
-## changed
+### changed
 
 - changed the max sessions limit from unlimited to only `10` sessions by default
 
-## adding...
+### adding
 
 - adding life age on `Gemini Session`, means when idle (no interactions) the session will be destroyed
 
-# Version 1.4.0
+## Version 1.4.0
 
-## using typescript
+### using typescript
 
 - now uses typescript to better catch errors
 
-## added
+### added
+
 - added idle session detection, where idle sessions will be destroyed
 
-## fixed
+### fixed
 
 - fixed some weird codes
 - fixed some variables that has mixed types
 
-# Version 1.5.0
+## Version 1.5.0
 
-## debugging
+### debugging
+
  To setup testing environment, run these commands on their each respective terminals.
+
 - npm run start:dev
 - npm run test:server
 
-## deprecated
+### deprecated
+
 - The api `/webhook` is now changed to `/generative-ai/api/v1/webhook`
 
-## added
+### added
+
 - option to change servers
 - webhook debugger/tester
 - request logger
 
-# Version 1.5.1
+## Version 1.5.1
 
-## fixed
+### fixed
 
 - fixed some minor bugs
 
-# Version 1.5.2
+## Version 1.5.2
 
-## added
+### added
+
 - support for frontend using `socket.io`
 - webhook based clients and frontend clients are seperate, this means there can be `10` webhook clients (messenger) and `10` socket clients (frontend)
 
-# Version 1.5.3
+## Version 1.5.3
 
-## changed
+### changed
+
 - updated the session idle detector, now called `session cleanup worker`
 
-# Version 1.5.4
+## Version 1.5.4
 
 ## using bootstrap
+
 - now using bootstrap to make frontend development faster
 
-# Version 1.5.5
+## Version 1.5.5
 
-## fixed
+### fixed
+
 - fixed some minor bugs for the frontend
 
-## Version 1.6.0
+### Version 1.6.0
 
 - removed bun support for simplicity
 - refactor the codebase
 - migrated from `@google/generative-ai` to `@google/genai`
 - supporting messenger webhooks for now (no socket.io)
 
-## Version 1.6.1
+### Version 1.6.1
+
 - fixed some configuration bugs
 - default name is now "GenBot"
+
+## Version 2.0.0
+
+COMPLETELY refactored the codebase from SCRATCH
+
+- now switched to Tsup for faster development
+- also now uses Hono instead of Express
+- now checks incoming message webhooks using `zod`
+- made `gemini` into `Generation`, which is a more friendly name and easier to swap out Gemini with other chatbots
+- gemini model is now overridable, incase you want to change models without modifying code
+- also now introducing chat history saving! When connection deactivate, your chat history will now be saved and has an option to clear history. (NOT YET IMPLEMENTED)
+
+## Version 2.1.0
+
+### changes
+
+- migrated from `npm` to `pnpm`
+- now using `ts-dotenv` to have better env autocomplete with typescript
+
+### removed
+
+- REMOVED fb service temporarily, starting point for API only
