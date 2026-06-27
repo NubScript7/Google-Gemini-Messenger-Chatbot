@@ -3,13 +3,14 @@ import { config } from 'dotenv'
 
 config({ quiet: true })
 
-const IS_DEV = process.env.APP_STATE !== 'production'
+const IS_DEV = process.env.NODE_ENV !== 'production'
 
 export default defineConfig({
-  entry: ['src/application/index.ts'],       // your main file
+  entry: ["src/main.ts"],
   format: ['esm'],               // output format
+  bundle: true,
   platform: 'node',              // Node runtime
-  target: 'node20',              // adjust to your Node version
+  target: 'node20',              // adjust to your Node version (node20)
   outDir: 'dist',                // output directory
   sourcemap: IS_DEV,               // for debugging
   clean: true,                   // clears dist before build

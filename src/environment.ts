@@ -6,10 +6,13 @@ export const schema = {
     GOOGLE_GEMINI_API_KEY: String,
     GOOGLE_GEMINI_MODEL: String,
     GOOGLE_GEMINI_INSTRUCTIONS: String,
+    GOOGLE_GEMINI_LITE_MAX_TOKEN: Number,
 
     // production | development
-    APP_STATE: String,
+    NODE_ENV: String,
     AUTH_API_TOKEN: String
 }
 
 export const env = load(schema);
+
+export const IS_DEV = env.NODE_ENV === "development"
