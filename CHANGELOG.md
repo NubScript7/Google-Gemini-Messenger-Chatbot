@@ -134,3 +134,22 @@ COMPLETELY refactored the codebase from SCRATCH
 ### removed
 
 - REMOVED fb service temporarily, starting point for API only
+
+## Version 2.2.0
+
+### fixed
+
+- fixed vercel wrong file structure, now vercel can find the entrypoint normally
+
+### changes
+
+- contents of `src/application/` has moved to `src/`
+- thrown `APP_STATE` environment var, use `NODE_ENV` as always from now
+- reworked `src/error.ts`
+- when zod schema detect invalid data, it does not give verbose message about the issue (ONLY IN PRODUCTION!)
+
+### added
+
+- schema validation using zod
+- added a new api in `api/generate/chat/lite` which is designed to use less token, for testing or just for short responses
+- added a new api to count tokens `api/token/count`

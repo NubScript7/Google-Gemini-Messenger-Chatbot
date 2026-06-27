@@ -3,20 +3,23 @@ import { Hono } from "hono";
 import { GenerateAPISchema } from "../../schema/generate";
 import { generateContent, generateContentStream } from "../../bot/generateMessage";
 import { streamSSE } from "hono/streaming";
+import { generateContentLite } from "../../bot/generateLite";
+import { createZodInvalidFormatHandler } from "../../error";
 
 export const generateAPI = new Hono()
 
-generateAPI.post('/chat', zValidator("json", GenerateAPISchema), async c => {
+const chatValidator = () => zValidator("json", GenerateAPISchema, createZodInvalidFormatHandler())
+
+
+generateAPI.post('/chat', chatValidator(), async c => {
     const { history, prompt } = c.req.valid("json")
 
     const response = await generateContent(history.contents, prompt)
 
-    console.log(response)
-
     return c.json({ result: response.text });
-});
+})
 
-generateAPI.post('/chat/stream', zValidator("json", GenerateAPISchema), c => {
+generateAPI.post('/chat/stream', chatValidator(), c => {
     const { history, prompt } = c.req.valid("json")
 
     return streamSSE(c, async (stream) => {
@@ -43,4 +46,18 @@ generateAPI.post('/chat/stream', zValidator("json", GenerateAPISchema), c => {
             await stream.close()
         }
     })
+})
+
+
+generateAPI.post('/chat/lite', chatValidator(), async c => {
+    const { history, prompt } = c.req.valid("json")
+
+    const response = await generateContentLite(history.contents, prompt)
+
+    if (typeof response.sdkHttpResponse?.json === "function") {
+        const data = await response.sdkHttpResponse.json()
+        console.log({ data })
+    }
+
+    return c.json({ result: response.text, response });
 })
