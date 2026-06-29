@@ -38,7 +38,7 @@ export const errorHandler = (err: Error, c: Context) => {
         success: false,
         error: {
             name: "HTTPException",
-            message: err.message
+            message: "Invalid or missing authentication token"
         },
     }, err.status)
 
