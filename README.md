@@ -35,15 +35,16 @@
 
 - Yes, as i said, you can modify and change whatever you like based on your needs
 
+
+> [!WARNING]  
+> Commands are not supported in this version. You can still implement it but there will be another cloudflare version that will bring back the old features!
+
 <details open>
 <summary>
  <h3> :computer: Commands </h3>
 </summary>
 
 #### The available command are:
-
-> [!WARNING]
-> Commands are not supported in this version. You can still implement it but there will be another cloudflare version that will bring back the old features!
 
 - !help - prints the instruction of how to use the app, also tells the list of commands
 - !v - get app version
@@ -67,6 +68,12 @@
 ```bash
 git clone https://github.com/NubScript7/Google-Gemini-Messenger-Chatbot
 ```
+
+### Fork the repository
+
+- Alternatively, you can fork the repository instead which duplicates it into your profile
+
+![Image showing how to fork the repository](https://github.com/user-attachments/assets/c8ad2be0-a209-458c-aed4-217ed66e3916)
 
 > **Attention!**
 >
