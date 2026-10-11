@@ -59,5 +59,5 @@ generateAPI.post('/chat/lite', chatValidator(), async c => {
         console.log({ data })
     }
 
-    return c.json({ result: response.text, response });
+    return c.json({ result: response.text });
 })
