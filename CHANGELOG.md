@@ -153,3 +153,14 @@ COMPLETELY refactored the codebase from SCRATCH
 - schema validation using zod
 - added a new api in `api/generate/chat/lite` which is designed to use less token, for testing or just for short responses
 - added a new api to count tokens `api/token/count`
+
+## Cloudflare Worker Version
+
+> [!NOTE]
+> This is now compatible with cloudflare workers!
+
+### changed
+  
+- changed into cloudflare worker
+- THIS IS API ONLY!
+- The other features are not supported in this version, such as messenger webhooks support and app commands.

@@ -1,4 +1,8 @@
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
 allowBuilds:
+  '@google/genai': true
   esbuild: true
-  pre-commit: true
   protobufjs: true
+  workerd: true

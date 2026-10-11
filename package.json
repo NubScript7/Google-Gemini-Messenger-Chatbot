@@ -1,29 +1,25 @@
 {
-  "name": "ggmc",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/main.ts",
-    "build": "npx tsup",
-    "start": "node dist/index.js"
-  },
-  "devDependencies": {
-    "@types/axios": "^0.9.36",
-    "@types/node": "^25.0.10",
-    "typescript": "~5.8.3"
-  },
-  "dependencies": {
-    "@hono/zod-validator": "^0.7.6",
-    "@google/genai": "^1.38.0",
-    "@hono/node-server": "^1.19.9",
-    "axios": "^1.13.3",
-    "dotenv": "^17.2.3",
-    "hono": "^4.11.5",
-    "node-cron": "^4.2.1",
-    "ts-dotenv": "^0.9.1",
-    "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
-    "zod": "^4.3.6"
-  }
+    "name": "ggmc",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy --minify",
+        "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    },
+    "dependencies": {
+        "hono": "^4.13.13",
+        "@hono/zod-validator": "^0.7.6",
+        "@google/genai": "^1.38.0",
+        "axios": "^1.13.3",
+        "ts-dotenv": "^0.9.1",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "wrangler": "^4.110.0",
+        "@types/axios": "^0.9.36",
+        "@types/node": "^25.0.10",
+        "typescript": "~5.8.3"
+    }
 }

@@ -1,5 +1,5 @@
-<h1 align=center> Google-Gemini-Messenger-Chatbot </h1>
-<p align="center"> A Chatbot for Facebook Messenger using Facebook Graph API and Google Gemini AI API</p>
+<h1 align=center> Google-Gemini-Chatbot-API (cloudflare edition)</h1>
+<p align="center"> A Chatbot API for your applications. Now in cloudflare workers with minimal cold start times!</p>
 
 <div align="center">
 <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
@@ -9,18 +9,18 @@
 
 ## Work in progress :construction: :construction_worker:
 
-> this project is still in progress!
+> this project would always be in progress as long as im alive
 
 ## :star: Features
 
-- You can use command by typing an exclamation mark `!` before you message
-- You can ask Gemini by just typing your message
+- ~~You can use command by typing an exclamation mark `!` before you message~~ (removed in this version)
+- You can ask Gemini by sending a POST request
 
 ## :crown: Q & A
 
-> :warning: **Attention** :warning:
+> [!NOTE]
 >
-> - When i mention `vendor(s)` i refer to companies, groups, individuals, etc. that offers ai software/service.
+> When i mention `vendor(s)` i refer to companies, groups, individuals, etc. that offers ai software/service.
 
 #### Why Gemini? Why not ChatGPT or other vendors?
 
@@ -41,6 +41,9 @@
 </summary>
 
 #### The available command are:
+
+> [!WARNING]
+> Commands are not supported in this version. You can still implement it but there will be another cloudflare version that will bring back the old features!
 
 - !help - prints the instruction of how to use the app, also tells the list of commands
 - !v - get app version
@@ -71,26 +74,12 @@ git clone https://github.com/NubScript7/Google-Gemini-Messenger-Chatbot
 
 - After that, install the required dependencies of this project.
 
-### npm
-
-```bash
-npm install
-```
-
-### yarn
-
-```bash
-yarn install
-```
-
-### pnpm
+### install required dependencies
 
 ```bash
 pnpm install
 ```
 
-> Installation of required dependencies might take a while.
-> **Recommended** to download required dependencies over a wifi network
 
 > Thats it! you have successfully downloaded the required dependencies :raised_hands: :dancer:
 
@@ -98,9 +87,8 @@ pnpm install
 
 > :warning: **Attention** :warning:
 >
-> - You need a messenger page with `graph api` and `webhooks` already setup
-> - You also need a google ai api key
-> - Put your api key in a `.env` file as the name `GOOGLE_GEMINI_API_KEY`
+> You need a google ai api key.
+> Put your api key in a `.env` file as the name `GOOGLE_GEMINI_API_KEY`
 
 - your `.env` file should look like this:
 
@@ -108,34 +96,19 @@ pnpm install
   GOOGLE_GEMINI_API_KEY=<YOUR_GOOGLE_AI_API_KEY_HERE>
 ```
 
-- To start the last bundled app, from the CLI run:
+- To start run this command:
 
 ```bash
-npm run start
+pnpm run dev
 ```
 
-> You **can** modify the application code to add or remove features for your needs
+> This will start a preview of the cloudflare worker on your local machine
 
-- If you have modified the typescript file(s), run:
+- If you have made changes to the code and you are now satisfied and ready to deploy, run this code:
 
 ```bash
-  npm run compile
+pnpm run deploy
 ```
 
-- Then
-
-```bash
-npm run start:preview
-```
-
-> _You can also bundle the files you have generated after running `npm run compile`_
-
-```bash
-npm run build
-```
-
-- If you want a one liner version
-
-```bash
-npm run production
-```
+> [!WARNING]
+> You must have a cloudflare account and signed-in with the CLI in order to deploy the cloudflare worker.
