@@ -5,18 +5,23 @@ import { generateContent, generateContentStream } from "../../bot/generateMessag
 import { streamSSE } from "hono/streaming";
 import { generateContentLite } from "../../bot/generateLite";
 import { createZodInvalidFormatHandler } from "../../error";
+import { logError } from "../../lib/errorLogger";
 
 export const generateAPI = new Hono()
 
 const chatValidator = () => zValidator("json", GenerateAPISchema, createZodInvalidFormatHandler())
 
-
 generateAPI.post('/chat', chatValidator(), async c => {
     const { history, prompt } = c.req.valid("json")
 
-    const response = await generateContent(history.contents, prompt)
+    try {
+        const response = await generateContent(history.contents, prompt)
+        return c.json({ result: response.text, success: true });
+    } catch(err) {
+        logError(err)
+        return c.json({ result: null, success: false }, 500)
+    }
 
-    return c.json({ result: response.text });
 })
 
 generateAPI.post('/chat/stream', chatValidator(), c => {
@@ -38,9 +43,10 @@ generateAPI.post('/chat/stream', chatValidator(), c => {
                 data: "[DONE]"
             })
             await stream.close()
-        } catch (error: any) {
+        } catch (err: any) {
+            logError(err)
             await stream.writeSSE({
-                data: JSON.stringify({ error: error.message || error }),
+                data: JSON.stringify({ error: err.message || err }),
                 event: "error"
             })
             await stream.close()
@@ -52,12 +58,10 @@ generateAPI.post('/chat/stream', chatValidator(), c => {
 generateAPI.post('/chat/lite', chatValidator(), async c => {
     const { history, prompt } = c.req.valid("json")
 
-    const response = await generateContentLite(history.contents, prompt)
-
-    if (typeof response.sdkHttpResponse?.json === "function") {
-        const data = await response.sdkHttpResponse.json()
-        console.log({ data })
+    try {
+        const response = await generateContentLite(history.contents, prompt)
+        return c.json({ result: response.text, success: true });
+    } catch {
+        return c.json({ result: null, success: false }, 500)
     }
-
-    return c.json({ result: response.text });
 })
